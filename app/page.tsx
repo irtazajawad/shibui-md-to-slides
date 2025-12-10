@@ -20,6 +20,19 @@ const defaultNewMarkdown = `# Welcome to Your Presentation
 
 ---
 
+## Introduction to Markdown Tables
+
+| Column 1      | Column 2      | Column 3      |
+|---------------|---------------|---------------|
+| Row 1, Cell 1 | Row 1, Cell 2 | Row 1, Cell 3 |
+| Row 2, Cell 1 | Row 2, Cell 2 | Row 2, Cell 3 |
+| Row 3, Cell 1 | Row 3, Cell 2 | Row 3, Cell 3 |
+
+- Use \`|\` to separate columns
+- Use \`---\` to create the header separator
+
+---
+
 ## Add Your Content
 
 Replace this template with your own markdown content.

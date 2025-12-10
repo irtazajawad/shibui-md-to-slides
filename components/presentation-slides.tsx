@@ -8,7 +8,8 @@ interface PresentationSlidesProps {
   currentIndex: number
   onNext: () => void
   onPrev: () => void
-  highlightColor: string // Added highlightColor prop
+  highlightColor: string
+  textColor: string
 }
 
 export default function PresentationSlides({
@@ -17,6 +18,7 @@ export default function PresentationSlides({
   onNext,
   onPrev,
   highlightColor,
+  textColor,
 }: PresentationSlidesProps) {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -35,6 +37,7 @@ export default function PresentationSlides({
           slide={slides[currentIndex]}
           isHeadingSlide={slides[currentIndex].isHeadingSlide}
           highlightColor={highlightColor}
+          textColor={textColor}
         />
       </div>
     </div>

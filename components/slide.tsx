@@ -7,7 +7,8 @@ import { useEffect } from "react"
 interface SlideProps {
   slide: { title: string; content: string; isHeadingSlide?: boolean }
   isHeadingSlide?: boolean
-  highlightColor: string // Added highlightColor prop
+  highlightColor: string
+  textColor: string
 }
 
 function parseMarkdownToJSX(content: string, highlightColor: string): React.ReactNode[] {
@@ -97,7 +98,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     // Check for headings
     if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={key++} className="text-2xl font-bold mt-4 mb-2 text-foreground">
+        <h3 key={key++} className="text-2xl font-bold mt-4 mb-2">
           {parseInlineMarkdown(line.slice(4), highlightColor)}
         </h3>,
       )
@@ -106,7 +107,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     }
     if (line.startsWith("## ")) {
       elements.push(
-        <h2 key={key++} className="text-4xl font-bold mt-6 mb-3 text-foreground">
+        <h2 key={key++} className="text-4xl font-bold mt-6 mb-3">
           {parseInlineMarkdown(line.slice(3), highlightColor)}
         </h2>,
       )
@@ -115,7 +116,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     }
     if (line.startsWith("# ")) {
       elements.push(
-        <h1 key={key++} className="text-5xl font-bold mt-8 mb-4 text-foreground">
+        <h1 key={key++} className="text-5xl font-bold mt-8 mb-4">
           {parseInlineMarkdown(line.slice(2), highlightColor)}
         </h1>,
       )
@@ -144,7 +145,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
       elements.push(
         <ul key={key++} className="list-disc pl-6 my-3 space-y-2">
           {listItems.map((item, idx) => (
-            <li key={idx} className="text-lg text-foreground">
+            <li key={idx} className="text-lg">
               {parseInlineMarkdown(item, highlightColor)}
             </li>
           ))}
@@ -163,7 +164,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
       elements.push(
         <ol key={key++} className="list-decimal pl-6 my-3 space-y-2">
           {listItems.map((item, idx) => (
-            <li key={idx} className="text-lg text-foreground">
+            <li key={idx} className="text-lg">
               {parseInlineMarkdown(item, highlightColor)}
             </li>
           ))}
@@ -175,7 +176,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     // Regular paragraph (skip empty lines)
     if (line.trim()) {
       elements.push(
-        <p key={key++} className="text-lg leading-relaxed my-3 text-foreground">
+        <p key={key++} className="text-lg leading-relaxed my-3">
           {parseInlineMarkdown(line, highlightColor)}
         </p>,
       )
@@ -220,7 +221,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     const codeMatch = remaining.match(/^`([^`]+)`/)
     if (codeMatch) {
       parts.push(
-        <code key={key++} className="bg-muted px-2 py-1 rounded text-sm font-mono text-foreground">
+        <code key={key++} className="bg-muted px-2 py-1 rounded text-sm font-mono">
           {codeMatch[1]}
         </code>,
       )
@@ -252,7 +253,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
   return parts.length === 1 ? parts[0] : <>{parts}</>
 }
 
-export default function Slide({ slide, isHeadingSlide, highlightColor }: SlideProps) {
+export default function Slide({ slide, isHeadingSlide, highlightColor, textColor }: SlideProps) {
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).hljs) {
       document.querySelectorAll("pre code").forEach((el) => {
@@ -273,15 +274,15 @@ export default function Slide({ slide, isHeadingSlide, highlightColor }: SlidePr
     }
 
     return (
-      <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-20">
-        <h1 className="presentation-serif text-6xl font-bold text-foreground leading-tight">{parseInlineMarkdown(slide.title, highlightColor)}</h1>
+      <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-20" style={{ color: textColor }}>
+        <h1 className="presentation-serif text-6xl font-bold leading-tight">{parseInlineMarkdown(slide.title, highlightColor)}</h1>
         {subtitle && (
-          <h2 className="presentation-serif text-2xl text-muted-foreground max-w-3xl leading-relaxed">
+          <h2 className="presentation-serif text-2xl opacity-70 max-w-3xl leading-relaxed">
             {parseInlineMarkdown(subtitle, highlightColor)}
           </h2>
         )}
         {remainingContent && (
-          <div className="presentation-serif text-xl text-muted-foreground max-w-2xl leading-relaxed">
+          <div className="presentation-serif text-xl opacity-70 max-w-2xl leading-relaxed">
             {parseMarkdownToJSX(remainingContent, highlightColor)}
           </div>
         )}
@@ -290,9 +291,9 @@ export default function Slide({ slide, isHeadingSlide, highlightColor }: SlidePr
   }
 
   return (
-    <div className="presentation-serif space-y-6 py-12">
-      {slide.title && <h2 className="text-5xl font-bold text-foreground mb-8">{parseInlineMarkdown(slide.title, highlightColor)}</h2>}
-      <div className="max-w-none text-foreground">{parseMarkdownToJSX(slide.content, highlightColor)}</div>
+    <div className="presentation-serif space-y-6 py-12" style={{ color: textColor }}>
+      {slide.title && <h2 className="text-5xl font-bold mb-8">{parseInlineMarkdown(slide.title, highlightColor)}</h2>}
+      <div className="max-w-none">{parseMarkdownToJSX(slide.content, highlightColor)}</div>
     </div>
   )
 }

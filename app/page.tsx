@@ -36,6 +36,7 @@ export default function Home() {
   const [slides, setSlides] = useState<Slide[]>([])
   const [highlightColor, setHighlightColor] = useState("#000000")
   const [backgroundColor, setBackgroundColor] = useState("#FFFDFB")
+  const [textColor, setTextColor] = useState("#1a1a1a")
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -168,6 +169,7 @@ export default function Home() {
             onNext={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
             onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
             highlightColor={highlightColor}
+            textColor={textColor}
           />
         </div>
 
@@ -196,9 +198,11 @@ export default function Home() {
           markdown={markdown}
           highlightColor={highlightColor}
           backgroundColor={backgroundColor}
+          textColor={textColor}
           onSave={handleSaveMarkdown}
           onColorChange={setHighlightColor}
           onBackgroundColorChange={setBackgroundColor}
+          onTextColorChange={setTextColor}
           onClose={() => setEditorOpen(false)}
         />
       )}

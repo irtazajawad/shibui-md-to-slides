@@ -37,9 +37,11 @@ interface MarkdownEditorProps {
   markdown: string
   highlightColor: string
   backgroundColor: string
+  textColor: string
   onSave: (markdown: string) => void
   onColorChange: (color: string) => void
   onBackgroundColorChange: (color: string) => void
+  onTextColorChange: (color: string) => void
   onClose: () => void
 }
 
@@ -47,18 +49,23 @@ export default function MarkdownEditor({
   markdown,
   highlightColor,
   backgroundColor,
+  textColor,
   onSave,
   onColorChange,
   onBackgroundColorChange,
+  onTextColorChange,
   onClose,
 }: MarkdownEditorProps) {
   const [content, setContent] = useState(markdown)
   const [color, setColor] = useState(highlightColor)
   const [bgColor, setBgColor] = useState(backgroundColor)
+  const [txtColor, setTxtColor] = useState(textColor)
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showBgColorPicker, setShowBgColorPicker] = useState(false)
+  const [showTextColorPicker, setShowTextColorPicker] = useState(false)
   const [hexInput, setHexInput] = useState(highlightColor)
   const [bgHexInput, setBgHexInput] = useState(backgroundColor)
+  const [textHexInput, setTextHexInput] = useState(textColor)
 
   useEffect(() => {
     setContent(markdown)
@@ -73,6 +80,11 @@ export default function MarkdownEditor({
     setBgColor(backgroundColor)
     setBgHexInput(backgroundColor.replace(/^#/, ""))
   }, [backgroundColor])
+
+  useEffect(() => {
+    setTxtColor(textColor)
+    setTextHexInput(textColor.replace(/^#/, ""))
+  }, [textColor])
 
   const handleSave = () => {
     onSave(content)
@@ -89,6 +101,12 @@ export default function MarkdownEditor({
     setBgColor(newColor)
     setBgHexInput(newColor.replace(/^#/, ""))
     onBackgroundColorChange(newColor)
+  }
+
+  const handleTextColorChange = (newColor: string) => {
+    setTxtColor(newColor)
+    setTextHexInput(newColor.replace(/^#/, ""))
+    onTextColorChange(newColor)
   }
 
   // Strip # if user pastes/types it, and validate
@@ -111,6 +129,15 @@ export default function MarkdownEditor({
     const sanitized = sanitizeHexInput(bgHexInput)
     if (hexRegex.test(sanitized)) {
       handleBgColorChange(`#${sanitized}`)
+    }
+  }
+
+  const handleTextHexSubmit = () => {
+    // Validate hex color (without #)
+    const hexRegex = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+    const sanitized = sanitizeHexInput(textHexInput)
+    if (hexRegex.test(sanitized)) {
+      handleTextColorChange(`#${sanitized}`)
     }
   }
 
@@ -213,7 +240,77 @@ export default function MarkdownEditor({
               )}
             </div>
 
-            {/* Original highlight color picker */}
+            {/* Text color picker */}
+            <div className="relative">
+              <button
+                onClick={() => setShowTextColorPicker(!showTextColorPicker)}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
+              >
+                <div className="w-4 h-4 rounded border border-border" style={{ backgroundColor: txtColor }} />
+                <span>Text</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Text color picker dropdown */}
+              {showTextColorPicker && (
+                <div className="absolute right-0 top-full mt-2 p-4 bg-card border border-border rounded-lg shadow-xl z-10 w-64">
+                  <div className="space-y-4">
+                    {/* Color wheel input */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Choose Color</label>
+                      <input
+                        type="color"
+                        value={txtColor}
+                        onChange={(e) => handleTextColorChange(e.target.value)}
+                        className="w-full h-10 rounded cursor-pointer border border-border"
+                      />
+                    </div>
+
+                    {/* Hex input */}
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Hex Value</label>
+                      <div className="flex gap-2">
+                        <div className="flex items-center border border-border rounded-lg bg-background overflow-hidden focus-within:ring-2 focus-within:ring-primary/50">
+                          <span className="px-2 py-1.5 text-sm text-muted-foreground bg-muted border-r border-border select-none">#</span>
+                          <input
+                            type="text"
+                            value={textHexInput}
+                            onChange={(e) => setTextHexInput(sanitizeHexInput(e.target.value))}
+                            onKeyDown={(e) => e.key === "Enter" && handleTextHexSubmit()}
+                            placeholder="1A1A1A"
+                            maxLength={6}
+                            className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
+                          />
+                        </div>
+                        <button
+                          onClick={handleTextHexSubmit}
+                          className="px-3 py-1.5 text-sm rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Preview */}
+                    <div className="p-3 rounded border border-border" style={{ backgroundColor: bgColor }}>
+                      <p className="text-sm" style={{ color: txtColor }}>Text color preview</p>
+                    </div>
+
+                    {/* Reset to default */}
+                    <button
+                      onClick={() => handleTextColorChange("#1a1a1a")}
+                      className="w-full px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
+                    >
+                      Reset to Default (#1A1A1A)
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Highlight color picker */}
             <div className="relative">
               <button
                 onClick={() => setShowColorPicker(!showColorPicker)}

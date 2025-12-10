@@ -173,7 +173,11 @@ export default function MarkdownEditor({
           <div className="flex items-center gap-3">
             <div className="relative">
               <button
-                onClick={() => setShowBgColorPicker(!showBgColorPicker)}
+                onClick={() => {
+                  setShowBgColorPicker(!showBgColorPicker)
+                  setShowTextColorPicker(false)
+                  setShowColorPicker(false)
+                }}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
               >
                 <div className="w-4 h-4 rounded border border-border" style={{ backgroundColor: bgColor }} />
@@ -243,7 +247,11 @@ export default function MarkdownEditor({
             {/* Text color picker */}
             <div className="relative">
               <button
-                onClick={() => setShowTextColorPicker(!showTextColorPicker)}
+                onClick={() => {
+                  setShowTextColorPicker(!showTextColorPicker)
+                  setShowBgColorPicker(false)
+                  setShowColorPicker(false)
+                }}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
               >
                 <div className="w-4 h-4 rounded border border-border" style={{ backgroundColor: txtColor }} />
@@ -313,7 +321,11 @@ export default function MarkdownEditor({
             {/* Highlight color picker */}
             <div className="relative">
               <button
-                onClick={() => setShowColorPicker(!showColorPicker)}
+                onClick={() => {
+                  setShowColorPicker(!showColorPicker)
+                  setShowBgColorPicker(false)
+                  setShowTextColorPicker(false)
+                }}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
               >
                 <div className="w-4 h-4 rounded border border-border" style={{ backgroundColor: color }} />

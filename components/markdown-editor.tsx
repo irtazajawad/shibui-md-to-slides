@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 /**
  * Counts slides by counting --- separators (ignoring those in code blocks)
@@ -66,6 +66,8 @@ export default function MarkdownEditor({
   const [hexInput, setHexInput] = useState(highlightColor)
   const [bgHexInput, setBgHexInput] = useState(backgroundColor)
   const [textHexInput, setTextHexInput] = useState(textColor)
+  const [visibleSlide, setVisibleSlide] = useState(1)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     setContent(markdown)
@@ -107,6 +109,33 @@ export default function MarkdownEditor({
     setTxtColor(newColor)
     setTextHexInput(newColor.replace(/^#/, ""))
     onTextColorChange(newColor)
+  }
+
+  // Calculate which slide is visible based on scroll position
+  const handleScroll = () => {
+    if (!textareaRef.current) return
+
+    const textarea = textareaRef.current
+    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20
+    const scrollTop = textarea.scrollTop
+    const visibleLineIndex = Math.floor(scrollTop / lineHeight)
+
+    const lines = content.split("\n")
+    let slideCount = 1
+    let inCodeBlock = false
+
+    for (let i = 0; i <= Math.min(visibleLineIndex, lines.length - 1); i++) {
+      const line = lines[i]
+      if (/^```|^~~~/.test(line.trim())) {
+        inCodeBlock = !inCodeBlock
+        continue
+      }
+      if (!inCodeBlock && /^\s*---\s*$/.test(line)) {
+        slideCount++
+      }
+    }
+
+    setVisibleSlide(slideCount)
   }
 
   // Strip # if user pastes/types it, and validate
@@ -400,8 +429,14 @@ export default function MarkdownEditor({
         {/* Editor area */}
         <div className="flex-1 overflow-hidden p-6">
           <textarea
+            ref={textareaRef}
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={(e) => {
+              setContent(e.target.value)
+              // Recalculate visible slide after content changes
+              setTimeout(handleScroll, 0)
+            }}
+            onScroll={handleScroll}
             className="w-full h-full resize-none bg-background border border-border rounded-lg p-4 font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 leading-relaxed"
             placeholder="Enter your markdown presentation here..."
             spellCheck={false}
@@ -410,8 +445,8 @@ export default function MarkdownEditor({
 
         {/* Footer with stats */}
         <div className="px-6 py-3 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
-          <span>{countSlides(content)} slides</span>
-          <span>{content.length} characters</span>
+          <span>Slide {visibleSlide} of {countSlides(content)}</span>
+          <span>{content.trim() ? content.trim().split(/\s+/).length : 0} words</span>
         </div>
       </div>
     </div>

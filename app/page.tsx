@@ -99,26 +99,39 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      {sidebarOpen && (
-        <div className="w-64 border-r border-border overflow-y-auto">
+    <div className="flex h-screen bg-background relative">
+      {/* Fixed hamburger button with Content label */}
+      <div className="fixed top-0 left-0 z-50 flex items-center gap-3 p-4 bg-card w-64">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2 hover:bg-muted rounded-lg transition-colors bg-card border border-border"
+          title={sidebarOpen ? "Hide TOC" : "Show TOC"}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <span className={`font-serif text-xl font-bold text-foreground transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0"}`}>
+          Content
+        </span>
+      </div>
+
+      {/* Sidebar - always rendered but width controlled */}
+      <div
+        className={`border-r border-border overflow-y-auto overflow-x-hidden transition-all duration-300 ${sidebarOpen ? "w-64" : "w-0 border-r-0"
+          }`}
+      >
+        <div className={`w-64 transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
           <TableOfContents slides={slides} currentIndex={currentSlideIndex} onSelectSlide={handleSlideChange} />
         </div>
-      )}
+      </div>
 
       {/* Main slide area */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Header with controls */}
         <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-            title={sidebarOpen ? "Hide TOC" : "Show TOC"}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+          {/* Spacer for hamburger */}
+          <div className="w-9"></div>
           <div className="text-sm text-muted-foreground">
             Slide {currentSlideIndex + 1} of {slides.length}
           </div>

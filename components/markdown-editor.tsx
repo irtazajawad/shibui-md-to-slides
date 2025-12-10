@@ -66,12 +66,12 @@ export default function MarkdownEditor({
 
   useEffect(() => {
     setColor(highlightColor)
-    setHexInput(highlightColor)
+    setHexInput(highlightColor.replace(/^#/, ""))
   }, [highlightColor])
 
   useEffect(() => {
     setBgColor(backgroundColor)
-    setBgHexInput(backgroundColor)
+    setBgHexInput(backgroundColor.replace(/^#/, ""))
   }, [backgroundColor])
 
   const handleSave = () => {
@@ -81,29 +81,36 @@ export default function MarkdownEditor({
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor)
-    setHexInput(newColor)
+    setHexInput(newColor.replace(/^#/, ""))
     onColorChange(newColor)
   }
 
   const handleBgColorChange = (newColor: string) => {
     setBgColor(newColor)
-    setBgHexInput(newColor)
+    setBgHexInput(newColor.replace(/^#/, ""))
     onBackgroundColorChange(newColor)
   }
 
+  // Strip # if user pastes/types it, and validate
+  const sanitizeHexInput = (value: string) => {
+    return value.replace(/^#/, "").toUpperCase()
+  }
+
   const handleHexSubmit = () => {
-    // Validate hex color
-    const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
-    if (hexRegex.test(hexInput)) {
-      handleColorChange(hexInput)
+    // Validate hex color (without #)
+    const hexRegex = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+    const sanitized = sanitizeHexInput(hexInput)
+    if (hexRegex.test(sanitized)) {
+      handleColorChange(`#${sanitized}`)
     }
   }
 
   const handleBgHexSubmit = () => {
-    // Validate hex color
-    const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
-    if (hexRegex.test(bgHexInput)) {
-      handleBgColorChange(bgHexInput)
+    // Validate hex color (without #)
+    const hexRegex = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
+    const sanitized = sanitizeHexInput(bgHexInput)
+    if (hexRegex.test(sanitized)) {
+      handleBgColorChange(`#${sanitized}`)
     }
   }
 
@@ -168,14 +175,18 @@ export default function MarkdownEditor({
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Hex Value</label>
                       <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={bgHexInput}
-                          onChange={(e) => setBgHexInput(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleBgHexSubmit()}
-                          placeholder="#FFFDFB"
-                          className="w-24 px-3 py-1.5 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
+                        <div className="flex items-center border border-border rounded-lg bg-background overflow-hidden focus-within:ring-2 focus-within:ring-primary/50">
+                          <span className="px-2 py-1.5 text-sm text-muted-foreground bg-muted border-r border-border select-none">#</span>
+                          <input
+                            type="text"
+                            value={bgHexInput}
+                            onChange={(e) => setBgHexInput(sanitizeHexInput(e.target.value))}
+                            onKeyDown={(e) => e.key === "Enter" && handleBgHexSubmit()}
+                            placeholder="FFFDFB"
+                            maxLength={6}
+                            className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
+                          />
+                        </div>
                         <button
                           onClick={handleBgHexSubmit}
                           className="px-3 py-1.5 text-sm rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
@@ -234,14 +245,18 @@ export default function MarkdownEditor({
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-2">Hex Value</label>
                       <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={hexInput}
-                          onChange={(e) => setHexInput(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleHexSubmit()}
-                          placeholder="#000000"
-                          className="w-24 px-3 py-1.5 text-sm border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        />
+                        <div className="flex items-center border border-border rounded-lg bg-background overflow-hidden focus-within:ring-2 focus-within:ring-primary/50">
+                          <span className="px-2 py-1.5 text-sm text-muted-foreground bg-muted border-r border-border select-none">#</span>
+                          <input
+                            type="text"
+                            value={hexInput}
+                            onChange={(e) => setHexInput(sanitizeHexInput(e.target.value))}
+                            onKeyDown={(e) => e.key === "Enter" && handleHexSubmit()}
+                            placeholder="000000"
+                            maxLength={6}
+                            className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
+                          />
+                        </div>
                         <button
                           onClick={handleHexSubmit}
                           className="px-3 py-1.5 text-sm rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity"

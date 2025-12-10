@@ -262,12 +262,29 @@ export default function Slide({ slide, isHeadingSlide, highlightColor }: SlidePr
   }, [slide])
 
   if (isHeadingSlide) {
+    // Check if content starts with ## (subtitle) and extract it cleanly
+    const contentLines = slide.content.split("\n")
+    let subtitle = ""
+    let remainingContent = slide.content
+
+    if (contentLines[0]?.startsWith("## ")) {
+      subtitle = contentLines[0].slice(3) // Remove "## "
+      remainingContent = contentLines.slice(1).join("\n").trim()
+    }
+
     return (
       <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-20">
         <h1 className="presentation-serif text-6xl font-bold text-foreground leading-tight">{slide.title}</h1>
-        <div className="presentation-serif text-xl text-muted-foreground max-w-2xl leading-relaxed">
-          {slide.content}
-        </div>
+        {subtitle && (
+          <h2 className="presentation-serif text-2xl text-muted-foreground max-w-3xl leading-relaxed">
+            {subtitle}
+          </h2>
+        )}
+        {remainingContent && (
+          <div className="presentation-serif text-xl text-muted-foreground max-w-2xl leading-relaxed">
+            {parseMarkdownToJSX(remainingContent, highlightColor)}
+          </div>
+        )}
       </div>
     )
   }

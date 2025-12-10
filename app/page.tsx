@@ -1,0 +1,207 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import PresentationSlides from "@/components/presentation-slides"
+import TableOfContents from "@/components/table-of-contents"
+import MarkdownEditor from "@/components/markdown-editor"
+import WelcomeScreen from "@/components/welcome-screen"
+import { parsePresentation, type Slide } from "@/lib/presentation-data"
+
+const defaultNewMarkdown = `# Welcome to Your Presentation
+## Start creating your slides
+
+---
+
+## Getting Started
+
+- Use **bold text** for emphasis
+- Create new slides by adding \`---\` between content
+- Use \`#\` for main headings and \`##\` for slide titles
+
+---
+
+## Add Your Content
+
+Replace this template with your own markdown content.
+
+Happy presenting!
+`
+
+export default function Home() {
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [editorOpen, setEditorOpen] = useState(false)
+  const [markdown, setMarkdown] = useState<string | null>(null)
+  const [slides, setSlides] = useState<Slide[]>([])
+  const [highlightColor, setHighlightColor] = useState("#000000")
+  const [backgroundColor, setBackgroundColor] = useState("#FFFDFB")
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
+  }
+
+  const handleSlideChange = (index: number) => {
+    setCurrentSlideIndex(index)
+  }
+
+  const handleSaveMarkdown = (newMarkdown: string) => {
+    setMarkdown(newMarkdown)
+    const newSlides = parsePresentation(newMarkdown)
+    setSlides(newSlides)
+    if (currentSlideIndex >= newSlides.length) {
+      setCurrentSlideIndex(Math.max(0, newSlides.length - 1))
+    }
+  }
+
+  const handleUpload = (content: string) => {
+    setMarkdown(content)
+    const newSlides = parsePresentation(content)
+    setSlides(newSlides)
+    setCurrentSlideIndex(0)
+  }
+
+  const handleCreate = () => {
+    setMarkdown(defaultNewMarkdown)
+    setSlides(parsePresentation(defaultNewMarkdown))
+    setCurrentSlideIndex(0)
+    setEditorOpen(true) // Open editor immediately for new presentations
+  }
+
+  if (!markdown) {
+    return <WelcomeScreen onUpload={handleUpload} onCreate={handleCreate} />
+  }
+
+  return (
+    <div className="flex h-screen bg-background">
+      {sidebarOpen && (
+        <div className="w-64 border-r border-border overflow-y-auto">
+          <TableOfContents slides={slides} currentIndex={currentSlideIndex} onSelectSlide={handleSlideChange} />
+        </div>
+      )}
+
+      {/* Main slide area */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        {/* Header with controls */}
+        <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title={sidebarOpen ? "Hide TOC" : "Show TOC"}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="text-sm text-muted-foreground">
+            Slide {currentSlideIndex + 1} of {slides.length}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMarkdown(null)}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              title="New Presentation"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setEditorOpen(true)}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              title="Edit Presentation"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={toggleFullscreen}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              {isFullscreen ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 9L4 4m0 0v5m0-5h5M15 9l5-5m0 0v5m0-5h-5M9 15l-5 5m0 0v-5m0 5h5M15 15l5 5m0 0v-5m0 5h-5"
+                  />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Slides container */}
+        <div className="flex-1 overflow-y-auto" style={{ backgroundColor }}>
+          <PresentationSlides
+            slides={slides}
+            currentIndex={currentSlideIndex}
+            onNext={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+            onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+            highlightColor={highlightColor}
+          />
+        </div>
+
+        {/* Navigation controls */}
+        <div className="h-16 border-t border-border flex items-center justify-center gap-4 px-6 bg-card">
+          <button
+            onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+            disabled={currentSlideIndex === 0}
+            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+          >
+            ← Previous
+          </button>
+          <button
+            onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+            disabled={currentSlideIndex === slides.length - 1}
+            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+
+      {/* Editor */}
+      {editorOpen && (
+        <MarkdownEditor
+          markdown={markdown}
+          highlightColor={highlightColor}
+          backgroundColor={backgroundColor}
+          onSave={handleSaveMarkdown}
+          onColorChange={setHighlightColor}
+          onBackgroundColorChange={setBackgroundColor}
+          onClose={() => setEditorOpen(false)}
+        />
+      )}
+    </div>
+  )
+}

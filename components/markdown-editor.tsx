@@ -2,6 +2,37 @@
 
 import { useState, useEffect } from "react"
 
+/**
+ * Counts slides by counting --- separators (ignoring those in code blocks)
+ */
+function countSlides(markdown: string): number {
+  const lines = markdown.split("\n")
+  let count = 1 // Start with 1 since first content is slide 1
+  let inFencedCodeBlock = false
+  let hasContent = false
+
+  for (const line of lines) {
+    // Check for fenced code block start/end
+    if (/^```|^~~~/.test(line.trim())) {
+      inFencedCodeBlock = !inFencedCodeBlock
+      hasContent = true
+      continue
+    }
+
+    // Check if line is a slide separator
+    if (!inFencedCodeBlock && /^\s*---\s*$/.test(line)) {
+      if (hasContent) {
+        count++
+        hasContent = false
+      }
+    } else if (line.trim()) {
+      hasContent = true
+    }
+  }
+
+  return count
+}
+
 interface MarkdownEditorProps {
   markdown: string
   highlightColor: string
@@ -255,7 +286,7 @@ export default function MarkdownEditor({
 
         {/* Footer with stats */}
         <div className="px-6 py-3 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
-          <span>{content.split("---").filter((s) => s.trim()).length} slides</span>
+          <span>{countSlides(content)} slides</span>
           <span>{content.length} characters</span>
         </div>
       </div>

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/irtaza/Desktop/Shibui/markdown-to-slides/node_modules/.pnpm/next%4016.0.7_react-dom%4019.2.0_react%4019.2.0__react%4019.2.0/node_modules/next/src/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.ts"],"sourcesContent":["module.exports = (\n  require('../../module.compiled') as typeof import('../../module.compiled')\n).vendored['react-ssr']!.ReactJsxDevRuntime\n"],"names":["module","exports","require","vendored","ReactJsxDevRuntime"],"mappings":"AAAAA,OAAOC,OAAO,GACZC,QAAQ,yOACRC,QAAQ,CAAC,YAAY,CAAEC,kBAAkB","ignoreList":[0]}}]
+}

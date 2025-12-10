@@ -274,10 +274,10 @@ export default function Slide({ slide, isHeadingSlide, highlightColor }: SlidePr
 
     return (
       <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-20">
-        <h1 className="presentation-serif text-6xl font-bold text-foreground leading-tight">{slide.title}</h1>
+        <h1 className="presentation-serif text-6xl font-bold text-foreground leading-tight">{parseInlineMarkdown(slide.title, highlightColor)}</h1>
         {subtitle && (
           <h2 className="presentation-serif text-2xl text-muted-foreground max-w-3xl leading-relaxed">
-            {subtitle}
+            {parseInlineMarkdown(subtitle, highlightColor)}
           </h2>
         )}
         {remainingContent && (
@@ -291,7 +291,7 @@ export default function Slide({ slide, isHeadingSlide, highlightColor }: SlidePr
 
   return (
     <div className="presentation-serif space-y-6 py-12">
-      {slide.title && <h2 className="text-5xl font-bold text-foreground mb-8">{slide.title}</h2>}
+      {slide.title && <h2 className="text-5xl font-bold text-foreground mb-8">{parseInlineMarkdown(slide.title, highlightColor)}</h2>}
       <div className="max-w-none text-foreground">{parseMarkdownToJSX(slide.content, highlightColor)}</div>
     </div>
   )

@@ -19,7 +19,7 @@ export default function TableOfContents({ slides, currentIndex, onSelectSlide }:
               : "text-foreground hover:bg-muted"
               }`}
           >
-            <span className="text-sm">{index + 1}.</span>
+            <span className="text-sm font-bold">{index + 1}.</span>
             <span className="ml-2 text-sm font-serif line-clamp-2">{slide.title || "Untitled"}</span>
           </button>
         ))}

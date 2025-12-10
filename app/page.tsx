@@ -20,7 +20,7 @@ const defaultNewMarkdown = `# Welcome to Your Presentation
 
 ---
 
-## Introduction to Markdown Tables
+## Introduction to Tables
 
 | Column 1      | Column 2      | Column 3      |
 |---------------|---------------|---------------|

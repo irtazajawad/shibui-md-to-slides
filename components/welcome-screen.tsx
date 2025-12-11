@@ -49,7 +49,7 @@ export default function WelcomeScreen({ onUpload, onCreate }: WelcomeScreenProps
             <span className="font-serif font-bold">Shibui</span>
             <span className={`${zenMaruGothic.className} ml-2`}>(渋い)</span>
           </h1>
-          <p className="text-muted-foreground text-lg mb-12">Create minimal presentations from your markdown files</p>
+          <p className="text-muted-foreground text-lg mb-5">Create minimal presentations from your markdown files</p>
 
           {/* Action buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

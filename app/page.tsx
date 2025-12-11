@@ -48,7 +48,6 @@ export default function Home() {
   const [markdown, setMarkdown] = useState<string | null>(null)
   const [slides, setSlides] = useState<Slide[]>([])
   const [highlightColor, setHighlightColor] = useState("#000000")
-  const [backgroundColor, setBackgroundColor] = useState("#FFFDFB")
   const [textColor, setTextColor] = useState("#1a1a1a")
 
   useEffect(() => {
@@ -188,7 +187,7 @@ export default function Home() {
         </div>
 
         {/* Slides container */}
-        <div className="flex-1 overflow-y-auto" style={{ backgroundColor }}>
+        <div className="flex-1 overflow-y-auto bg-background">
           <PresentationSlides
             slides={slides}
             currentIndex={currentSlideIndex}
@@ -223,11 +222,9 @@ export default function Home() {
         <MarkdownEditor
           markdown={markdown}
           highlightColor={highlightColor}
-          backgroundColor={backgroundColor}
           textColor={textColor}
           onSave={handleSaveMarkdown}
           onColorChange={setHighlightColor}
-          onBackgroundColorChange={setBackgroundColor}
           onTextColorChange={setTextColor}
           onClose={() => setEditorOpen(false)}
         />

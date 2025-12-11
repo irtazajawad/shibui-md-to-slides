@@ -231,7 +231,7 @@ export default function MarkdownEditor({
 
                     {/* Preview */}
                     <div className="p-3 rounded border border-border bg-background">
-                      <p className="text-sm" style={{ color: txtColor }}>Text color preview</p>
+                      <p className="text-sm font-serif font-medium" style={{ color: txtColor }}>Text color preview</p>
                     </div>
 
                     {/* Reset to default */}
@@ -303,9 +303,8 @@ export default function MarkdownEditor({
                     </div>
 
                     {/* Preview */}
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">Preview</label>
-                      <p className="text-sm">
+                    <div className="p-3 rounded border border-border bg-background">
+                      <p className="text-sm font-serif font-medium">
                         Normal text with <strong style={{ color: color }}>highlighted text</strong> example.
                       </p>
                     </div>

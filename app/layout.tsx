@@ -10,7 +10,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 const _ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500", "700", "800"] })
 
 export const metadata: Metadata = {
-  title: "Markdown Presentation",
+  title: "Shibui - Markdown Slides",
   description: "Beautiful minimal markdown slide deck",
   generator: "v0.app",
 }

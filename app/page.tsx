@@ -100,7 +100,7 @@ export default function Home() {
   return (
     <div className="flex h-screen bg-background relative">
       {/* Fixed hamburger button with Content label */}
-      <div className="fixed top-0 left-0 z-50 flex items-center gap-3 p-4 bg-card w-64">
+      <div className="fixed top-0 left-0 z-50 flex items-center gap-3 px-4 h-16 bg-card w-64 border-b border-border">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="p-2 hover:bg-muted rounded-lg transition-colors bg-card border border-border"

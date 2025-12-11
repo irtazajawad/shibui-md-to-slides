@@ -49,6 +49,7 @@ export default function Home() {
   const [slides, setSlides] = useState<Slide[]>([])
   const [highlightColor, setHighlightColor] = useState("#000000")
   const [textColor, setTextColor] = useState("#1a1a1a")
+  const [zoomLevel, setZoomLevel] = useState(100)
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -187,33 +188,63 @@ export default function Home() {
         </div>
 
         {/* Slides container */}
-        <div className="flex-1 overflow-y-auto bg-background">
-          <PresentationSlides
-            slides={slides}
-            currentIndex={currentSlideIndex}
-            onNext={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
-            onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
-            highlightColor={highlightColor}
-            textColor={textColor}
-          />
+        <div className="flex-1 overflow-auto bg-background">
+          <div className="min-h-full flex items-center justify-center" style={{ zoom: zoomLevel / 100 }}>
+            <div className="w-full">
+              <PresentationSlides
+                slides={slides}
+                currentIndex={currentSlideIndex}
+                onNext={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+                onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+                highlightColor={highlightColor}
+                textColor={textColor}
+              />
+            </div>
+          </div>
+
         </div>
 
         {/* Navigation controls */}
-        <div className="h-16 border-t border-border flex items-center justify-center gap-4 px-6 bg-card">
-          <button
-            onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
-            disabled={currentSlideIndex === 0}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            ← Previous
-          </button>
-          <button
-            onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
-            disabled={currentSlideIndex === slides.length - 1}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            Next →
-          </button>
+        <div className="h-16 border-t border-border flex items-center justify-between px-6 bg-card">
+          <div className="w-32"></div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+              disabled={currentSlideIndex === 0}
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+              disabled={currentSlideIndex === slides.length - 1}
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              Next →
+            </button>
+          </div>
+          {/* Zoom controls */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setZoomLevel((z) => Math.max(50, z - 10))}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              title="Zoom out"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </button>
+            <span className="text-sm text-muted-foreground w-12 text-center">{zoomLevel}%</span>
+            <button
+              onClick={() => setZoomLevel((z) => Math.min(150, z + 10))}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              title="Zoom in"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

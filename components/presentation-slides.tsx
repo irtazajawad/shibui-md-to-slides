@@ -31,8 +31,8 @@ export default function PresentationSlides({
   }, [onNext, onPrev])
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-8">
-      <div className="w-full max-w-4xl">
+    <div className="h-full w-full flex items-center justify-center p-4 md:p-8 lg:p-12">
+      <div className="w-full max-w-6xl">
         <Slide
           slide={slides[currentIndex]}
           isHeadingSlide={slides[currentIndex].isHeadingSlide}

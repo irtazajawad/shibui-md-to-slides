@@ -210,15 +210,15 @@ export default function MarkdownEditor({
                       <div className="flex gap-2">
                         <div className="flex items-center border border-border rounded-lg bg-background overflow-hidden focus-within:ring-2 focus-within:ring-primary/50">
                           <span className="px-2 py-1.5 text-sm text-muted-foreground bg-muted border-r border-border select-none">#</span>
-                          <input
-                            type="text"
+                        <input
+                          type="text"
                             value={textHexInput}
                             onChange={(e) => setTextHexInput(sanitizeHexInput(e.target.value))}
                             onKeyDown={(e) => e.key === "Enter" && handleTextHexSubmit()}
                             placeholder="1A1A1A"
                             maxLength={6}
                             className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
-                          />
+                        />
                         </div>
                         <button
                           onClick={handleTextHexSubmit}
@@ -283,15 +283,15 @@ export default function MarkdownEditor({
                       <div className="flex gap-2">
                         <div className="flex items-center border border-border rounded-lg bg-background overflow-hidden focus-within:ring-2 focus-within:ring-primary/50">
                           <span className="px-2 py-1.5 text-sm text-muted-foreground bg-muted border-r border-border select-none">#</span>
-                          <input
-                            type="text"
-                            value={hexInput}
+                        <input
+                          type="text"
+                          value={hexInput}
                             onChange={(e) => setHexInput(sanitizeHexInput(e.target.value))}
-                            onKeyDown={(e) => e.key === "Enter" && handleHexSubmit()}
+                          onKeyDown={(e) => e.key === "Enter" && handleHexSubmit()}
                             placeholder="000000"
                             maxLength={6}
                             className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
-                          />
+                        />
                         </div>
                         <button
                           onClick={handleHexSubmit}

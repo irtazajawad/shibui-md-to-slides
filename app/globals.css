@@ -122,13 +122,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   /* Add serif font styling for presentation content */
   .presentation-serif {
     @apply font-serif;
   }
+
   .presentation-serif h1,
   .presentation-serif h2,
   .presentation-serif h3 {
@@ -156,7 +159,7 @@ pre code {
 
 /* Add table styling for markdown tables */
 table {
-  @apply w-full border-collapse text-sm;
+  @apply w-full border-collapse text-base;
 }
 
 table th {
@@ -205,4 +208,42 @@ th {
 
 tr:nth-child(even) {
   background-color: #f9f9f9 !important;
+}
+
+/* KaTeX math equation styling */
+.katex-inline {
+  display: inline;
+}
+
+.katex-inline .katex {
+  font-size: 1em;
+  vertical-align: -0.05em;
+}
+
+.katex {
+  font-size: 1em !important;
+}
+
+.katex-display {
+  margin: 0 !important;
+}
+
+.katex .base {
+  vertical-align: baseline;
+}
+
+/* Block math equations */
+.katex-block {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.katex-block .katex {
+  font-size: 1.3em;
+}
+
+.katex-block .katex-display {
+  margin: 0;
+  padding: 0.5em 0;
 }

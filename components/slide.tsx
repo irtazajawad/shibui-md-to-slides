@@ -3,6 +3,24 @@
 import type React from "react"
 
 import { useEffect } from "react"
+import katex from "katex"
+import "katex/dist/katex.min.css"
+
+// KaTeX options with common macros for blackboard bold and other symbols
+const katexOptions = {
+  throwOnError: false,
+  strict: false,
+  trust: true,
+  macros: {
+    "\\R": "\\mathbb{R}",
+    "\\N": "\\mathbb{N}",
+    "\\Z": "\\mathbb{Z}",
+    "\\Q": "\\mathbb{Q}",
+    "\\C": "\\mathbb{C}",
+    "\\P": "\\mathbb{P}",
+    "\\F": "\\mathbb{F}",
+  },
+}
 
 interface SlideProps {
   slide: { title: string; content: string; isHeadingSlide?: boolean }
@@ -73,6 +91,63 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
           </table>
         </div>,
       )
+      continue
+    }
+
+    // Check for block math equations ($$...$$)
+    if (line.trim().startsWith("$$")) {
+      // Check if it's a single-line block math
+      if (line.trim().endsWith("$$") && line.trim().length > 4) {
+        const mathContent = line.trim().slice(2, -2)
+        try {
+          const html = katex.renderToString(mathContent, {
+            ...katexOptions,
+            displayMode: true,
+          })
+          elements.push(
+            <div
+              key={key++}
+              className="katex-block my-4 text-center"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          )
+        } catch {
+          elements.push(<div key={key++} className="my-4 text-center">{line}</div>)
+        }
+        i++
+        continue
+      }
+      // Multi-line block math
+      const mathLines: string[] = []
+      const firstLine = line.trim().slice(2) // Remove opening $$
+      if (firstLine) mathLines.push(firstLine)
+      i++
+      while (i < lines.length && !lines[i].trim().endsWith("$$")) {
+        mathLines.push(lines[i])
+        i++
+      }
+      if (i < lines.length) {
+        const lastLine = lines[i].trim().slice(0, -2) // Remove closing $$
+        if (lastLine) mathLines.push(lastLine)
+      }
+      i++
+      
+      const mathContent = mathLines.join("\n")
+      try {
+        const html = katex.renderToString(mathContent, {
+          ...katexOptions,
+          displayMode: true,
+        })
+        elements.push(
+          <div
+            key={key++}
+            className="katex-block my-4 text-center"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        )
+      } catch {
+        elements.push(<div key={key++} className="my-4 text-center">{mathContent}</div>)
+      }
       continue
     }
 
@@ -198,7 +273,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     if (boldMatch) {
       parts.push(
         <strong key={key++} className="font-bold" style={{ color: highlightColor }}>
-          {boldMatch[1]}
+          {parseInlineMarkdown(boldMatch[1], highlightColor)}
         </strong>,
       )
       remaining = remaining.slice(boldMatch[0].length)
@@ -210,7 +285,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     if (italicMatch) {
       parts.push(
         <em key={key++} className="italic">
-          {italicMatch[1]}
+          {parseInlineMarkdown(italicMatch[1], highlightColor)}
         </em>,
       )
       remaining = remaining.slice(italicMatch[0].length)
@@ -237,8 +312,31 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
       continue
     }
 
+    // Math equations with $ (inline math)
+    const mathMatch = remaining.match(/^\$([^$]+)\$/)
+    if (mathMatch) {
+      try {
+        const html = katex.renderToString(mathMatch[1], {
+          ...katexOptions,
+          displayMode: false,
+        })
+        parts.push(
+          <span
+            key={key++}
+            className="katex-inline"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        )
+      } catch {
+        // If KaTeX fails, just show the raw text
+        parts.push(<span key={key++}>${mathMatch[1]}$</span>)
+      }
+      remaining = remaining.slice(mathMatch[0].length)
+      continue
+    }
+
     // Regular text until next special character
-    const textMatch = remaining.match(/^[^*`⭐]+/)
+    const textMatch = remaining.match(/^[^*`⭐$]+/)
     if (textMatch) {
       parts.push(textMatch[0])
       remaining = remaining.slice(textMatch[0].length)
@@ -284,7 +382,7 @@ export default function Slide({ slide, isHeadingSlide, highlightColor, textColor
         {remainingContent && (
           <div className="presentation-serif text-lg md:text-xl opacity-70 max-w-3xl leading-relaxed">
             {parseMarkdownToJSX(remainingContent, highlightColor)}
-          </div>
+        </div>
         )}
       </div>
     )

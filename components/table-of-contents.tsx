@@ -15,9 +15,9 @@ export default function TableOfContents({ slides, currentIndex, onSelectSlide }:
             key={index}
             onClick={() => onSelectSlide(index)}
             className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${currentIndex === index
-              ? "bg-primary text-primary-foreground font-semibold"
-              : "text-foreground hover:bg-muted"
-              }`}
+                ? "bg-primary text-primary-foreground font-semibold"
+                : "text-foreground hover:bg-muted"
+            }`}
           >
             <span className="text-sm font-bold">{index + 1}.</span>
             <span className="ml-2 text-sm font-serif line-clamp-2">{slide.title || "Untitled"}</span>

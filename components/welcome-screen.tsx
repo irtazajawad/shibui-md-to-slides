@@ -8,9 +8,10 @@ import { zenMaruGothic } from "@/lib/fonts"
 interface WelcomeScreenProps {
   onUpload: (markdown: string) => void
   onCreate: () => void
+  onResume?: () => void
 }
 
-export default function WelcomeScreen({ onUpload, onCreate }: WelcomeScreenProps) {
+export default function WelcomeScreen({ onUpload, onCreate, onResume }: WelcomeScreenProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +51,26 @@ export default function WelcomeScreen({ onUpload, onCreate }: WelcomeScreenProps
             <span className={`${zenMaruGothic.className} ml-2`}>(渋い)</span>
           </h1>
           <p className="text-muted-foreground text-lg mb-5">Create minimal presentations from your markdown files</p>
+
+          {/* Resume button - shown when there's a previous presentation */}
+          {onResume && (
+            <div className="mb-6">
+              <button
+                onClick={onResume}
+                className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                  />
+                </svg>
+                Resume Previous Presentation
+              </button>
+            </div>
+          )}
 
           {/* Action buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -97,7 +118,7 @@ export default function WelcomeScreen({ onUpload, onCreate }: WelcomeScreenProps
           <span>Created by <a href="https://www.linkedin.com/in/irtaza-ahmed-958202249/" target="_blank" rel="noopener noreferrer" className="font-medium text-foreground hover:underline">Irtaza Ahmed</a></span>
           <span className="text-foreground/20">•</span>
           <a
-            href="https://github.com/irtazajawad/markdown-to-slides"
+            href="https://github.com/irtazajawad/markdown-to-slides.git"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-foreground transition-colors"

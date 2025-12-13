@@ -46,7 +46,6 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [editorOpen, setEditorOpen] = useState(false)
   const [markdown, setMarkdown] = useState<string | null>(null)
-  const [previousMarkdown, setPreviousMarkdown] = useState<string | null>(null)
   const [slides, setSlides] = useState<Slide[]>([])
   const [highlightColor, setHighlightColor] = useState("#000000")
   const [textColor, setTextColor] = useState("#1a1a1a")
@@ -89,36 +88,14 @@ export default function Home() {
   }
 
   const handleCreate = () => {
-    setPreviousMarkdown(null) // Clear previous when creating new
     setMarkdown(defaultNewMarkdown)
     setSlides(parsePresentation(defaultNewMarkdown))
     setCurrentSlideIndex(0)
     setEditorOpen(true) // Open editor immediately for new presentations
   }
 
-  const handleNewPresentation = () => {
-    if (markdown) {
-      setPreviousMarkdown(markdown) // Store current content before leaving
-    }
-    setMarkdown(null)
-  }
-
-  const handleResume = () => {
-    if (previousMarkdown) {
-      setMarkdown(previousMarkdown)
-      setSlides(parsePresentation(previousMarkdown))
-      setPreviousMarkdown(null)
-    }
-  }
-
   if (!markdown) {
-    return (
-      <WelcomeScreen 
-        onUpload={handleUpload} 
-        onCreate={handleCreate} 
-        onResume={previousMarkdown ? handleResume : undefined}
-      />
-    )
+    return <WelcomeScreen onUpload={handleUpload} onCreate={handleCreate} />
   }
 
   return (
@@ -160,7 +137,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={handleNewPresentation}
+              onClick={() => setMarkdown(null)}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
               title="New Presentation"
             >
@@ -214,14 +191,14 @@ export default function Home() {
         <div className="flex-1 overflow-auto bg-background">
           <div className="min-h-full flex items-center justify-center" style={{ zoom: zoomLevel / 100 }}>
             <div className="w-full">
-          <PresentationSlides
-            slides={slides}
-            currentIndex={currentSlideIndex}
-            onNext={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
-            onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
-            highlightColor={highlightColor}
+              <PresentationSlides
+                slides={slides}
+                currentIndex={currentSlideIndex}
+                onNext={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+                onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+                highlightColor={highlightColor}
                 textColor={textColor}
-          />
+              />
             </div>
           </div>
 
@@ -231,20 +208,20 @@ export default function Home() {
         <div className="h-16 border-t border-border flex items-center justify-between px-6 bg-card">
           <div className="w-32"></div>
           <div className="flex items-center gap-4">
-          <button
-            onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
-            disabled={currentSlideIndex === 0}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            ← Previous
-          </button>
-          <button
-            onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
-            disabled={currentSlideIndex === slides.length - 1}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            Next →
-          </button>
+            <button
+              onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+              disabled={currentSlideIndex === 0}
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              ← Previous
+            </button>
+            <button
+              onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+              disabled={currentSlideIndex === slides.length - 1}
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              Next →
+            </button>
           </div>
           {/* Zoom controls */}
           <div className="flex items-center gap-1">

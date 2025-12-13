@@ -10,6 +10,7 @@ interface PresentationSlidesProps {
   onPrev: () => void
   highlightColor: string
   textColor: string
+  editorOpen?: boolean
 }
 
 export default function PresentationSlides({
@@ -19,16 +20,20 @@ export default function PresentationSlides({
   onPrev,
   highlightColor,
   textColor,
+  editorOpen = false,
 }: PresentationSlidesProps) {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      // Don't handle arrow keys when editor is open
+      if (editorOpen) return
+
       if (e.key === "ArrowRight") onNext()
       if (e.key === "ArrowLeft") onPrev()
     }
 
     window.addEventListener("keydown", handleKeyPress)
     return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [onNext, onPrev])
+  }, [onNext, onPrev, editorOpen])
 
   return (
     <div className="h-full w-full flex items-center justify-center p-4 md:p-8 lg:p-12">

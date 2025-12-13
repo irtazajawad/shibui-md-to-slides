@@ -8,9 +8,11 @@ import { zenMaruGothic } from "@/lib/fonts"
 interface WelcomeScreenProps {
   onUpload: (markdown: string) => void
   onCreate: () => void
+  onRestore: () => void
+  hasSavedPresentation: boolean
 }
 
-export default function WelcomeScreen({ onUpload, onCreate }: WelcomeScreenProps) {
+export default function WelcomeScreen({ onUpload, onCreate, onRestore, hasSavedPresentation }: WelcomeScreenProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +82,26 @@ export default function WelcomeScreen({ onUpload, onCreate }: WelcomeScreenProps
               Create New
             </button>
           </div>
+
+          {/* Restore button - shown only if there's a saved presentation */}
+          {hasSavedPresentation && (
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={onRestore}
+                className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border-2 border-orange-500/40 bg-orange-50/50 text-orange-700 text-sm font-medium hover:bg-orange-100/70 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                  />
+                </svg>
+                Restore Previous Presentation
+              </button>
+            </div>
+          )}
 
           {/* Hidden file input */}
           <input ref={fileInputRef} type="file" accept=".md" onChange={handleFileUpload} className="hidden" />

@@ -50,6 +50,7 @@ export default function Home() {
   const [highlightColor, setHighlightColor] = useState("#000000")
   const [textColor, setTextColor] = useState("#1a1a1a")
   const [zoomLevel, setZoomLevel] = useState(100)
+  const [hasSavedPresentation, setHasSavedPresentation] = useState(false)
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -58,6 +59,16 @@ export default function Home() {
     document.addEventListener("fullscreenchange", handleFullscreenChange)
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
+
+  // Check for saved presentation on client-side only
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('previousPresentation')
+      setHasSavedPresentation(saved !== null)
+    } catch {
+      setHasSavedPresentation(false)
+    }
+  }, [markdown])
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -94,8 +105,42 @@ export default function Home() {
     setEditorOpen(true) // Open editor immediately for new presentations
   }
 
+  const handleReset = () => {
+    // Save current presentation to localStorage before resetting
+    if (markdown && slides.length > 0) {
+      try {
+        localStorage.setItem('previousPresentation', JSON.stringify({
+          markdown,
+          slideIndex: currentSlideIndex,
+          timestamp: Date.now()
+        }))
+        setHasSavedPresentation(true)
+      } catch (error) {
+        console.error('Failed to save presentation:', error)
+      }
+    }
+    setMarkdown(null)
+  }
+
+  const handleRestore = () => {
+    try {
+      const saved = localStorage.getItem('previousPresentation')
+      if (saved) {
+        const { markdown: savedMarkdown, slideIndex } = JSON.parse(saved)
+        setMarkdown(savedMarkdown)
+        const restoredSlides = parsePresentation(savedMarkdown)
+        setSlides(restoredSlides)
+        setCurrentSlideIndex(Math.min(slideIndex, restoredSlides.length - 1))
+        localStorage.removeItem('previousPresentation')
+        setHasSavedPresentation(false)
+      }
+    } catch (error) {
+      console.error('Failed to restore presentation:', error)
+    }
+  }
+
   if (!markdown) {
-    return <WelcomeScreen onUpload={handleUpload} onCreate={handleCreate} />
+    return <WelcomeScreen onUpload={handleUpload} onCreate={handleCreate} onRestore={handleRestore} hasSavedPresentation={hasSavedPresentation} />
   }
 
   return (
@@ -137,7 +182,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setMarkdown(null)}
+              onClick={handleReset}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
               title="New Presentation"
             >
@@ -198,6 +243,7 @@ export default function Home() {
                 onPrev={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
                 highlightColor={highlightColor}
                 textColor={textColor}
+                editorOpen={editorOpen}
               />
             </div>
           </div>

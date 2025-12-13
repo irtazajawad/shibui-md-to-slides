@@ -4,4 +4,3 @@ export const zenMaruGothic = Zen_Maru_Gothic({
   subsets: ["latin"], 
   weight: ["700"] 
 })
-

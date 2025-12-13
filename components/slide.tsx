@@ -131,7 +131,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
         if (lastLine) mathLines.push(lastLine)
       }
       i++
-      
+
       const mathContent = mathLines.join("\n")
       try {
         const html = katex.renderToString(mathContent, {
@@ -268,6 +268,16 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
   let key = 0
 
   while (remaining.length > 0) {
+    // Handle escaped characters (backslash escapes)
+    if (remaining.startsWith("\\")) {
+      const nextChar = remaining[1]
+      if (nextChar && /[\\`*_{}[\]()#+\-.!|$]/.test(nextChar)) {
+        parts.push(nextChar)
+        remaining = remaining.slice(2)
+        continue
+      }
+    }
+
     // Bold with **
     const boldMatch = remaining.match(/^\*\*(.+?)\*\*/)
     if (boldMatch) {
@@ -336,7 +346,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     }
 
     // Regular text until next special character
-    const textMatch = remaining.match(/^[^*`⭐$]+/)
+    const textMatch = remaining.match(/^[^*`⭐$\\]+/)
     if (textMatch) {
       parts.push(textMatch[0])
       remaining = remaining.slice(textMatch[0].length)
@@ -355,7 +365,7 @@ export default function Slide({ slide, isHeadingSlide, highlightColor, textColor
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).hljs) {
       document.querySelectorAll("pre code").forEach((el) => {
-        ;(window as any).hljs.highlightElement(el)
+        ; (window as any).hljs.highlightElement(el)
       })
     }
   }, [slide])
@@ -382,7 +392,7 @@ export default function Slide({ slide, isHeadingSlide, highlightColor, textColor
         {remainingContent && (
           <div className="presentation-serif text-lg md:text-xl opacity-70 max-w-3xl leading-relaxed">
             {parseMarkdownToJSX(remainingContent, highlightColor)}
-        </div>
+          </div>
         )}
       </div>
     )

@@ -35,12 +35,15 @@ export default function PresentationSlides({
     return () => window.removeEventListener("keydown", handleKeyPress)
   }, [onNext, onPrev, editorOpen])
 
+  // Safety check for empty slides
+  const currentSlide = slides[currentIndex] || { title: "", content: "", isHeadingSlide: false }
+
   return (
     <div className="h-full w-full flex items-center justify-center p-4 md:p-8 lg:p-12">
       <div className="w-full max-w-6xl">
         <Slide
-          slide={slides[currentIndex]}
-          isHeadingSlide={slides[currentIndex].isHeadingSlide}
+          slide={currentSlide}
+          isHeadingSlide={currentSlide.isHeadingSlide}
           highlightColor={highlightColor}
           textColor={textColor}
         />

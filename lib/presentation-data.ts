@@ -66,11 +66,19 @@ export function parsePresentation(markdown: string): Slide[] {
       }
     }
 
+    // If we have a title, add the slide
     if (title) {
       slides.push({
         title,
         content,
         isHeadingSlide,
+      })
+    } else if (part.trim()) {
+      // If no title but there's content, create a slide with content only
+      slides.push({
+        title: "",
+        content: part.trim(),
+        isHeadingSlide: false,
       })
     }
   }

@@ -7,22 +7,31 @@ import MarkdownEditor from "@/components/markdown-editor"
 import WelcomeScreen from "@/components/welcome-screen"
 import { parsePresentation, type Slide } from "@/lib/presentation-data"
 
-const defaultNewMarkdown = `# Welcome to Your Presentation
-## Start creating your slides
+const defaultNewMarkdown = `# Markdown → Slides
+## Write once. Present instantly. 🚀
 
 ---
+## How Slides Work
+- Each slide is written in **Markdown**
+- Add a new slide with \`---\`
+- Use headings to structure content
+  - \`#\` for big titles
+  - \`##\` for slide titles
 
-## Getting Started
-
-- Use **bold text** for emphasis
-- Create new slides by adding \`---\` between content
-- Use \`#\` for main headings and \`##\` for slide titles
+You focus on ideas. The app handles layout.
 
 ---
+## Text Formatting Made Simple
+- **Bold** for emphasis
+- *Italic* for tone
+- Lists for clarity
+- Inline code with backticks like \`this\`
 
-## Introduction to Tables
+Everything stays readable and distraction free.
 
-| Column 1      | Column 2      | Column 3      |
+---
+## Tables Just Work
+| Column 1 | Column 2 | Column 3 |
 |---------------|---------------|---------------|
 | Row 1, Cell 1 | Row 1, Cell 2 | Row 1, Cell 3 |
 | Row 2, Cell 1 | Row 2, Cell 2 | Row 2, Cell 3 |
@@ -31,13 +40,44 @@ const defaultNewMarkdown = `# Welcome to Your Presentation
 - Use \`|\` to separate columns
 - Use \`---\` to create the header separator
 
+Perfect for comparisons, data, or summaries.
+
 ---
+## LaTeX Math Support
+### Inline Equations
+Write math inline like $E = mc^2$ or the quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$
 
-## Add Your Content
+### Display Equations
+$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$
 
-Replace this template with your own markdown content.
+$$\\nabla \\times \\vec{E} = -\\frac{\\partial \\vec{B}}{\\partial t}$$
+---
+## Advanced Mathematics
+**Schrödinger Equation:**
+$$i\\hbar\\frac{\\partial}{\\partial t}\\Psi(\\vec{r},t) = \\left[-\\frac{\\hbar^2}{2m}\\nabla^2 + V(\\vec{r},t)\\right]\\Psi(\\vec{r},t)$$
 
-Happy presenting!
+**Matrix Operations:**
+$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}^{-1} = \\frac{1}{ad-bc}\\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}$$
+---
+## Code Highlighting
+\`\`\`javascript
+function createSlide(markdown) {
+  const slides = markdown.split('---');
+  return slides.map(slide => 
+    renderMarkdown(slide)
+  );
+}
+\`\`\`
+
+---
+## Start Presenting
+- Replace this file with your own Markdown
+- Add slides as you write
+- Preview instantly
+
+Your content, your flow, your slides.
+Happy presenting ✨
+---
 `
 
 export default function Home() {

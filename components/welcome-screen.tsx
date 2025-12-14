@@ -32,9 +32,9 @@ export default function WelcomeScreen({ onUpload, onCreate, onRestore, hasSavedP
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center max-w-xl px-6">
           {/* Logo/Icon */}
-          <div className="-mb-3">
-            <div className="w-32 h-32 mx-auto flex items-center justify-center">
-              <img src="/logo.png" alt="Shibui Logo" className="w-32 h-32 object-contain" />
+          <div className="-mb-6">
+            <div className="w-37 h-37 mx-auto flex items-center justify-center">
+              <img src="/logo.png" alt="Shibui Logo" className="w-37 h-37 object-contain" />
             </div>
           </div>
 

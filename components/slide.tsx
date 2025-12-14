@@ -210,10 +210,10 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
       continue
     }
 
-    // Check for unordered list items
-    if (line.trim().startsWith("- ")) {
+    // Check for unordered list items (both - and * bullets)
+    if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
       const listItems: string[] = []
-      while (i < lines.length && lines[i].trim().startsWith("- ")) {
+      while (i < lines.length && (lines[i].trim().startsWith("- ") || lines[i].trim().startsWith("* "))) {
         listItems.push(lines[i].trim().slice(2))
         i++
       }

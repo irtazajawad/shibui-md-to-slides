@@ -10,7 +10,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 const _ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500", "700", "800"] })
 
 export const metadata: Metadata = {
-  title: "Markdown Presentation",
+  title: "Shibui - Markdown Slides",
   description: "Beautiful minimal markdown slide deck",
   generator: "v0.app",
 }
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* <CHANGE> Add highlight.js for code syntax highlighting */}
         <link
@@ -30,7 +30,7 @@ export default function RootLayout({
         />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
       </head>
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased`} suppressHydrationWarning>
         {children}
         <Analytics />
       </body>

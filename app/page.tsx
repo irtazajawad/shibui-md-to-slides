@@ -340,6 +340,7 @@ export default function Home() {
           markdown={markdown}
           highlightColor={highlightColor}
           textColor={textColor}
+          currentSlideIndex={currentSlideIndex}
           onSave={handleSaveMarkdown}
           onColorChange={setHighlightColor}
           onTextColorChange={setTextColor}

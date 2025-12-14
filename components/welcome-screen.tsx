@@ -32,24 +32,16 @@ export default function WelcomeScreen({ onUpload, onCreate, onRestore, hasSavedP
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center max-w-xl px-6">
           {/* Logo/Icon */}
-          <div className="mb-8">
-            <div className="w-20 h-20 mx-auto rounded-2xl bg-foreground/5 flex items-center justify-center">
-              <svg className="w-10 h-10 text-foreground/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 9h1M9 13h6M9 17h6" />
-              </svg>
+          <div className="-mb-3">
+            <div className="w-32 h-32 mx-auto flex items-center justify-center">
+              <img src="/logo.png" alt="Shibui Logo" className="w-32 h-32 object-contain" />
             </div>
           </div>
 
           {/* Title */}
           <h1 className="text-4xl text-foreground mb-3">
-            <span className="font-serif font-bold">Shibui</span>
-            <span className={`${zenMaruGothic.className} ml-2`}>(渋い)</span>
+            <span className="font-serif font-bold">Markdown → Slides</span>
+            {/*<span className={`${zenMaruGothic.className} ml-2`}>(渋い)</span>*/}
           </h1>
           <p className="text-muted-foreground text-lg mb-5">Create minimal presentations from your markdown files</p>
 

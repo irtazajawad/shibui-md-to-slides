@@ -3,33 +3,13 @@
 import type React from "react"
 
 import { useEffect } from "react"
-import katex from "katex"
-import "katex/dist/katex.min.css"
-
-// KaTeX options with common macros for blackboard bold and other symbols
-const katexOptions = {
-  throwOnError: false,
-  strict: false,
-  trust: true,
-  macros: {
-    "\\R": "\\mathbb{R}",
-    "\\N": "\\mathbb{N}",
-    "\\Z": "\\mathbb{Z}",
-    "\\Q": "\\mathbb{Q}",
-    "\\C": "\\mathbb{C}",
-    "\\P": "\\mathbb{P}",
-    "\\F": "\\mathbb{F}",
-  },
-}
 
 interface SlideProps {
   slide: { title: string; content: string; isHeadingSlide?: boolean }
   isHeadingSlide?: boolean
-  highlightColor: string
-  textColor: string
 }
 
-function parseMarkdownToJSX(content: string, highlightColor: string): React.ReactNode[] {
+function parseMarkdownToJSX(content: string): React.ReactNode[] {
   const elements: React.ReactNode[] = []
   const lines = content.split("\n")
   let i = 0
@@ -75,7 +55,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
             <thead>
               <tr>
                 {tableRows[0].map((cell, idx) => (
-                  <th key={idx}>{parseInlineMarkdown(cell, highlightColor)}</th>
+                  <th key={idx}>{parseInlineMarkdown(cell)}</th>
                 ))}
               </tr>
             </thead>
@@ -83,7 +63,7 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
               {tableRows.slice(1).map((row, rowIdx) => (
                 <tr key={rowIdx}>
                   {row.map((cell, cellIdx) => (
-                    <td key={cellIdx}>{parseInlineMarkdown(cell, highlightColor)}</td>
+                    <td key={cellIdx}>{parseInlineMarkdown(cell)}</td>
                   ))}
                 </tr>
               ))}
@@ -91,63 +71,6 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
           </table>
         </div>,
       )
-      continue
-    }
-
-    // Check for block math equations ($$...$$)
-    if (line.trim().startsWith("$$")) {
-      // Check if it's a single-line block math
-      if (line.trim().endsWith("$$") && line.trim().length > 4) {
-        const mathContent = line.trim().slice(2, -2)
-        try {
-          const html = katex.renderToString(mathContent, {
-            ...katexOptions,
-            displayMode: true,
-          })
-          elements.push(
-            <div
-              key={key++}
-              className="katex-block my-4 text-center"
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
-          )
-        } catch {
-          elements.push(<div key={key++} className="my-4 text-center">{line}</div>)
-        }
-        i++
-        continue
-      }
-      // Multi-line block math
-      const mathLines: string[] = []
-      const firstLine = line.trim().slice(2) // Remove opening $$
-      if (firstLine) mathLines.push(firstLine)
-      i++
-      while (i < lines.length && !lines[i].trim().endsWith("$$")) {
-        mathLines.push(lines[i])
-        i++
-      }
-      if (i < lines.length) {
-        const lastLine = lines[i].trim().slice(0, -2) // Remove closing $$
-        if (lastLine) mathLines.push(lastLine)
-      }
-      i++
-
-      const mathContent = mathLines.join("\n")
-      try {
-        const html = katex.renderToString(mathContent, {
-          ...katexOptions,
-          displayMode: true,
-        })
-        elements.push(
-          <div
-            key={key++}
-            className="katex-block my-4 text-center"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        )
-      } catch {
-        elements.push(<div key={key++} className="my-4 text-center">{mathContent}</div>)
-      }
       continue
     }
 
@@ -173,8 +96,8 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     // Check for headings
     if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={key++} className="text-2xl md:text-3xl font-bold mt-4 mb-2">
-          {parseInlineMarkdown(line.slice(4), highlightColor)}
+        <h3 key={key++} className="text-2xl font-bold mt-4 mb-2 text-foreground">
+          {parseInlineMarkdown(line.slice(4))}
         </h3>,
       )
       i++
@@ -182,8 +105,8 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     }
     if (line.startsWith("## ")) {
       elements.push(
-        <h2 key={key++} className="text-3xl md:text-4xl font-bold mt-6 mb-3">
-          {parseInlineMarkdown(line.slice(3), highlightColor)}
+        <h2 key={key++} className="text-4xl font-bold mt-6 mb-3 text-foreground">
+          {parseInlineMarkdown(line.slice(3))}
         </h2>,
       )
       i++
@@ -191,8 +114,8 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     }
     if (line.startsWith("# ")) {
       elements.push(
-        <h1 key={key++} className="text-4xl md:text-5xl font-bold mt-8 mb-4">
-          {parseInlineMarkdown(line.slice(2), highlightColor)}
+        <h1 key={key++} className="text-5xl font-bold mt-8 mb-4 text-foreground">
+          {parseInlineMarkdown(line.slice(2))}
         </h1>,
       )
       i++
@@ -202,26 +125,26 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     // Check for blockquotes
     if (line.startsWith("> ")) {
       elements.push(
-        <blockquote key={key++} className="border-l-4 border-primary pl-6 italic my-4 text-lg md:text-xl opacity-80">
-          {parseInlineMarkdown(line.slice(2), highlightColor)}
+        <blockquote key={key++} className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">
+          {parseInlineMarkdown(line.slice(2))}
         </blockquote>,
       )
       i++
       continue
     }
 
-    // Check for unordered list items (both - and * bullets)
-    if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
+    // Check for unordered list items
+    if (line.trim().startsWith("- ")) {
       const listItems: string[] = []
-      while (i < lines.length && (lines[i].trim().startsWith("- ") || lines[i].trim().startsWith("* "))) {
+      while (i < lines.length && lines[i].trim().startsWith("- ")) {
         listItems.push(lines[i].trim().slice(2))
         i++
       }
       elements.push(
-        <ul key={key++} className="list-disc pl-8 my-4 space-y-3">
+        <ul key={key++} className="list-disc pl-6 my-3 space-y-2">
           {listItems.map((item, idx) => (
-            <li key={idx} className="text-lg md:text-xl">
-              {parseInlineMarkdown(item, highlightColor)}
+            <li key={idx} className="text-lg text-foreground">
+              {parseInlineMarkdown(item)}
             </li>
           ))}
         </ul>,
@@ -237,10 +160,10 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
         i++
       }
       elements.push(
-        <ol key={key++} className="list-decimal pl-8 my-4 space-y-3">
+        <ol key={key++} className="list-decimal pl-6 my-3 space-y-2">
           {listItems.map((item, idx) => (
-            <li key={idx} className="text-lg md:text-xl">
-              {parseInlineMarkdown(item, highlightColor)}
+            <li key={idx} className="text-lg text-foreground">
+              {parseInlineMarkdown(item)}
             </li>
           ))}
         </ol>,
@@ -251,8 +174,8 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     // Regular paragraph (skip empty lines)
     if (line.trim()) {
       elements.push(
-        <p key={key++} className="text-lg md:text-xl leading-relaxed my-4">
-          {parseInlineMarkdown(line, highlightColor)}
+        <p key={key++} className="text-lg leading-relaxed my-3 text-foreground">
+          {parseInlineMarkdown(line)}
         </p>,
       )
     }
@@ -262,28 +185,19 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
   return elements
 }
 
-function parseInlineMarkdown(text: string, highlightColor: string): React.ReactNode {
+// Parse inline markdown (bold, italic, code, links)
+function parseInlineMarkdown(text: string): React.ReactNode {
   const parts: React.ReactNode[] = []
   let remaining = text
   let key = 0
 
   while (remaining.length > 0) {
-    // Handle escaped characters (backslash escapes)
-    if (remaining.startsWith("\\")) {
-      const nextChar = remaining[1]
-      if (nextChar && /[\\`*_{}[\]()#+\-.!|$]/.test(nextChar)) {
-        parts.push(nextChar)
-        remaining = remaining.slice(2)
-        continue
-      }
-    }
-
     // Bold with **
     const boldMatch = remaining.match(/^\*\*(.+?)\*\*/)
     if (boldMatch) {
       parts.push(
-        <strong key={key++} className="font-bold" style={{ color: highlightColor }}>
-          {parseInlineMarkdown(boldMatch[1], highlightColor)}
+        <strong key={key++} className="font-bold" style={{ color: "#DC7B5D" }}>
+          {boldMatch[1]}
         </strong>,
       )
       remaining = remaining.slice(boldMatch[0].length)
@@ -295,7 +209,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     if (italicMatch) {
       parts.push(
         <em key={key++} className="italic">
-          {parseInlineMarkdown(italicMatch[1], highlightColor)}
+          {italicMatch[1]}
         </em>,
       )
       remaining = remaining.slice(italicMatch[0].length)
@@ -306,7 +220,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     const codeMatch = remaining.match(/^`([^`]+)`/)
     if (codeMatch) {
       parts.push(
-        <code key={key++} className="bg-muted px-2 py-1 rounded text-sm font-mono">
+        <code key={key++} className="bg-muted px-2 py-1 rounded text-sm font-mono text-foreground">
           {codeMatch[1]}
         </code>,
       )
@@ -322,31 +236,8 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
       continue
     }
 
-    // Math equations with $ (inline math)
-    const mathMatch = remaining.match(/^\$([^$]+)\$/)
-    if (mathMatch) {
-      try {
-        const html = katex.renderToString(mathMatch[1], {
-          ...katexOptions,
-          displayMode: false,
-        })
-        parts.push(
-          <span
-            key={key++}
-            className="katex-inline"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        )
-      } catch {
-        // If KaTeX fails, just show the raw text
-        parts.push(<span key={key++}>${mathMatch[1]}$</span>)
-      }
-      remaining = remaining.slice(mathMatch[0].length)
-      continue
-    }
-
     // Regular text until next special character
-    const textMatch = remaining.match(/^[^*`⭐$\\]+/)
+    const textMatch = remaining.match(/^[^*`⭐]+/)
     if (textMatch) {
       parts.push(textMatch[0])
       remaining = remaining.slice(textMatch[0].length)
@@ -361,47 +252,30 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
   return parts.length === 1 ? parts[0] : <>{parts}</>
 }
 
-export default function Slide({ slide, isHeadingSlide, highlightColor, textColor }: SlideProps) {
+export default function Slide({ slide, isHeadingSlide }: SlideProps) {
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).hljs) {
       document.querySelectorAll("pre code").forEach((el) => {
-        ; (window as any).hljs.highlightElement(el)
+        ;(window as any).hljs.highlightElement(el)
       })
     }
   }, [slide])
 
   if (isHeadingSlide) {
-    // Check if content starts with ## (subtitle) and extract it cleanly
-    const contentLines = slide.content.split("\n")
-    let subtitle = ""
-    let remainingContent = slide.content
-
-    if (contentLines[0]?.startsWith("## ")) {
-      subtitle = contentLines[0].slice(3) // Remove "## "
-      remainingContent = contentLines.slice(1).join("\n").trim()
-    }
-
     return (
-      <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-12" style={{ color: textColor }}>
-        <h1 className="presentation-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">{parseInlineMarkdown(slide.title, highlightColor)}</h1>
-        {subtitle && (
-          <h2 className="presentation-serif text-xl md:text-2xl lg:text-3xl opacity-70 max-w-4xl leading-relaxed">
-            {parseInlineMarkdown(subtitle, highlightColor)}
-          </h2>
-        )}
-        {remainingContent && (
-          <div className="presentation-serif text-lg md:text-xl opacity-70 max-w-3xl leading-relaxed">
-            {parseMarkdownToJSX(remainingContent, highlightColor)}
-          </div>
-        )}
+      <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-20">
+        <h1 className="presentation-serif text-6xl font-bold text-foreground leading-tight">{slide.title}</h1>
+        <div className="presentation-serif text-xl text-muted-foreground max-w-2xl leading-relaxed">
+          {slide.content}
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="presentation-serif space-y-6 py-8" style={{ color: textColor }}>
-      {slide.title && <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8">{parseInlineMarkdown(slide.title, highlightColor)}</h2>}
-      <div className="max-w-none text-lg md:text-xl">{parseMarkdownToJSX(slide.content, highlightColor)}</div>
+    <div className="presentation-serif space-y-6 py-12">
+      {slide.title && <h2 className="text-5xl font-bold text-foreground mb-8">{slide.title}</h2>}
+      <div className="max-w-none text-foreground">{parseMarkdownToJSX(slide.content)}</div>
     </div>
   )
 }

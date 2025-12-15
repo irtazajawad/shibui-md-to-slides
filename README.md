@@ -62,7 +62,7 @@
 
 Each slide is separated by `---` (three hyphens):
 
-````markdown
+\`\`\``markdown
 # Main Title
 ## Subtitle
 
@@ -78,7 +78,7 @@ Each slide is separated by `---` (three hyphens):
 ## Another Slide
 
 Your content here...
-````
+\`\`\``
 
 ### Slide Structure
 
@@ -102,7 +102,7 @@ Your content here...
 
 ### Setup
 
-```bash
+\`\`\`bash
 # Clone the repository
 git https://github.com/irtazajawad/shibui-md-to-slides.git
 
@@ -118,7 +118,7 @@ npm install
 pnpm dev
 # or
 npm run dev
-```
+\`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
 

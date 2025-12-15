@@ -149,12 +149,6 @@ Contributions are welcome! This project was built over a weekend, so there's ple
 
 
 
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-
-
 ## 🙏 Acknowledgments
 
 Built with frustration from existing tools and a weekend of coding. If you find this useful, star the repo ⭐

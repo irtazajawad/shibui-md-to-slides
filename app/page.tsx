@@ -40,6 +40,7 @@ Choose the right hierarchy for your content.
 - ~~Strikethrough~~ for corrections
 - \`Inline code\` with backticks
 - Links: [Shibui](https://v0-shibui.vercel.app/)
+> Blockquotes with \`>\`
 
 Everything stays readable and distraction free.
 
@@ -57,9 +58,9 @@ Mix and match to express your ideas.
 ## Tables Just Work
 | Feature        | Syntax | Result |
 |---------------|--------|--------|
-| Columns       | col    | Clean  |
-| Headers       | \`---\`  | Clear  |
-| Rows          | Text   | Simple |
+| R1C1       | R1C2    | R1C3  |
+| R2C1       | R2C2  | R2C3  |
+| R3C1          | R3C2   | R3C3 |
 
 Perfect for comparisons, data, or summaries.
 

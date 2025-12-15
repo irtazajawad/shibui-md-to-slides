@@ -181,11 +181,11 @@ export default function MarkdownEditor({
       const textarea = e.currentTarget
       const start = textarea.selectionStart
       const end = textarea.selectionEnd
-      
+
       // Insert tab character at cursor position
       const newContent = content.substring(0, start) + "\t" + content.substring(end)
       setContent(newContent)
-      
+
       // Move cursor after the inserted tab
       setTimeout(() => {
         textarea.selectionStart = textarea.selectionEnd = start + 1

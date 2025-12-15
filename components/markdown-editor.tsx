@@ -175,6 +175,24 @@ export default function MarkdownEditor({
     }
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Tab") {
+      e.preventDefault()
+      const textarea = e.currentTarget
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      
+      // Insert tab character at cursor position
+      const newContent = content.substring(0, start) + "\t" + content.substring(end)
+      setContent(newContent)
+      
+      // Move cursor after the inserted tab
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 1
+      }, 0)
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-card border border-border rounded-xl shadow-2xl w-[90vw] max-w-4xl h-[85vh] flex flex-col">
@@ -365,6 +383,7 @@ export default function MarkdownEditor({
               // Recalculate visible slide after content changes
               setTimeout(handleScroll, 0)
             }}
+            onKeyDown={handleKeyDown}
             onScroll={handleScroll}
             className="w-full h-full resize-none bg-background border border-border rounded-lg p-4 font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 leading-relaxed"
             placeholder="Enter your markdown presentation here..."

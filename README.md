@@ -62,7 +62,7 @@ Shibui is a minimal markdown-to-slides presentation app that lets you focus on y
 
 Each slide is separated by `---` (three hyphens):
 
-```markdown
+\`\`\`markdown
 # Main Title
 ## Subtitle
 
@@ -78,7 +78,7 @@ Each slide is separated by `---` (three hyphens):
 ## Another Slide
 
 Your content here...
-```
+\`\`\`
 
 ### Slide Structure
 
@@ -94,7 +94,7 @@ Your content here...
 
 ## 🛠️ Local Development
 
-```bash
+\`\`\`bash
 # Clone the repository
 git clone https://github.com/irtazajawad/markdown-to-slides.git
 
@@ -106,7 +106,7 @@ pnpm install
 
 # Run development server
 pnpm dev
-```
+\`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) to see the app.
 

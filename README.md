@@ -13,14 +13,10 @@
 
 
 
-## ✨ What is Shibui?
+## What is Shibui?
 
 Shibui is a minimal markdown-to-slides presentation app that lets you focus on your ideas, not your tooling. Write in markdown, present instantly. No templates, no distractions, no BS.
 
-**Key Philosophy:**
-- Write once. Present instantly.
-- Minimal interface that gets out of your way
-- Everything you need, nothing you don't
 
 
 ## 🚀 Features

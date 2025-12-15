@@ -15,30 +15,51 @@ const defaultNewMarkdown = `# Markdown → Slides
 - Each slide is written in **Markdown**
 - Add a new slide with \`---\`
 - Use headings to structure content
-  - \`#\` for big titles
-  - \`##\` for slide titles
+  - \`#\` for big titles (h1)
+  - \`##\` for slide titles (h2)
+  - \`###\` through \`######\` for smaller headings
 
 You focus on ideas. The app handles layout.
+
+---
+## All Heading Levels
+# Heading 1 (Largest)
+## Heading 2 (Main Titles)
+### Heading 3 (Sections)
+#### Heading 4 (Subsections)
+##### Heading 5 (Small)
+###### Heading 6 (Smallest)
+
+Choose the right hierarchy for your content.
 
 ---
 ## Text Formatting Made Simple
 - **Bold** for emphasis
 - *Italic* for tone
-- Lists for clarity
-- Inline code with backticks like \`this\`
+- ***Bold and italic*** combined
+- ~~Strikethrough~~ for corrections
+- \`Inline code\` with backticks
+- Links: [Shibui](https://v0-shibui.vercel.app/)
 
 Everything stays readable and distraction free.
 
 ---
-## Tables Just Work
-| Column 1 | Column 2 | Column 3 |
-|---------------|---------------|---------------|
-| Row 1, Cell 1 | Row 1, Cell 2 | Row 1, Cell 3 |
-| Row 2, Cell 1 | Row 2, Cell 2 | Row 2, Cell 3 |
-| Row 3, Cell 1 | Row 3, Cell 2 | Row 3, Cell 3 |
+## More Text Formatting
+- Subscript: H<sub>2</sub>O
+- Superscript: x<sup>2</sup>
+- <u>Underline</u> text (HTML)
+- Lists with \`-\` or \`*\` bullets
+- Ordered lists with \`1.\`, \`2.\`, etc.
 
-- Use \`|\` to separate columns
-- Use \`---\` to create the header separator
+Mix and match to express your ideas.
+
+---
+## Tables Just Work
+| Feature        | Syntax | Result |
+|---------------|--------|--------|
+| Columns       | col    | Clean  |
+| Headers       | \`---\`  | Clear  |
+| Rows          | Text   | Simple |
 
 Perfect for comparisons, data, or summaries.
 

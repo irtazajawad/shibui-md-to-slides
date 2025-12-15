@@ -1,30 +1,156 @@
-# Markdown presentation
+<div align="center">
+  <img src="public/logo.png" alt="Shibui Logo" width="200"/>
+  
+  # Shibui (渋い)
+  
+  ### An extremely minimal markdown presentation app
+  
+  *Vibe coded over a weekend, born out of mild frustration and a free weekend.*
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+  [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com/irtazas-projects-4e638e3d/markdown-to-slides)
+  
+</div>
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/irtazas-projects-4e638e3d/markdown-to-slides)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/sKndQBCfD3C)
 
-## Overview
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## ✨ What is Shibui?
 
-## Deployment
+Shibui is a minimal markdown-to-slides presentation app that lets you focus on your ideas, not your tooling. Write in markdown, present instantly. No templates, no distractions, no BS.
 
-Your project is live at:
+**Key Philosophy:**
+- Write once. Present instantly.
+- Minimal interface that gets out of your way
+- Everything you need, nothing you don't
 
-**[https://vercel.com/irtazas-projects-4e638e3d/markdown-to-slides](https://vercel.com/irtazas-projects-4e638e3d/markdown-to-slides)**
 
-## Build your app
+## 🚀 Features
 
-Continue building your app on:
+### Core Functionality
+- **📝 Markdown Editor** - Built-in editor with live preview
+- **📤 File Upload** - Drop in your `.md` files and start presenting
+- **🎨 Syntax Highlighting** - Beautiful code blocks with highlight.js
+- **🧮 LaTeX Math** - Full KaTeX support for equations
+- **📊 Tables** - Clean, readable table rendering
+- **🎯 Slide Navigation** - Keyboard shortcuts (←/→) and visual controls
 
-**[https://v0.app/chat/sKndQBCfD3C](https://v0.app/chat/sKndQBCfD3C)**
+### Text Formatting
+- **Bold** for emphasis
+- *Italic* for tone
+- `Inline code` with backticks
+- Lists (both `*` and `-` bullets)
+- Blockquotes
 
-## How It Works
+### Advanced Features
+- **LaTeX Math Support**
+  - Inline equations 
+  - Display equations
+  - Complex formulas and matrices
+- **Code Blocks** with syntax highlighting
+- **Tables** with automatic formatting
+- **Fullscreen Mode** for distraction-free presenting
+- **Zoom Controls** for better visibility
+- **Table of Contents** for easy navigation
+- **Restore Previous Presentation** - Accidentally hit the new button? No worries.
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+
+## 📖 How to Use
+
+### Getting Started
+
+1. **Visit the app** at your deployment URL
+2. **Choose your starting point:**
+   - Click **Upload Markdown** to import an existing `.md` file
+   - Click **Create New** to start with a sample presentation
+
+### Creating Slides
+
+Each slide is separated by `---` (three hyphens):
+
+```markdown
+# Main Title
+## Subtitle
+
+---
+
+## Slide Title
+
+- Bullet point 1
+- Bullet point 2
+
+---
+
+## Another Slide
+
+Your content here...
+```
+
+### Slide Structure
+
+- Use `#` for main title slides (centered, large)
+- Use `##` for regular slide titles
+- Add content below headings
+
+### Keyboard Shortcuts
+
+- `→` or `Right Arrow` - Next slide
+- `←` or `Left Arrow` - Previous slide
+
+
+## 🛠️ Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/irtazajawad/markdown-to-slides.git
+
+# Navigate to the project
+cd markdown-to-slides
+
+# Install dependencies
+pnpm install
+
+# Run development server
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the app.
+
+
+## 🏗️ Built With
+
+- **Next.js 16** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **KaTeX** - Math rendering
+- **Highlight.js** - Code syntax highlighting
+
+
+
+## 🤝 Contributing
+
+Contributions are welcome! This project was built over a weekend, so there's plenty of room for improvement.
+
+**To contribute:**
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+
+
+## 🙏 Acknowledgments
+
+Built with frustration from existing tools and a weekend of coding. If you find this useful, star the repo ⭐
+
+
+
+<div align="center">
+  Made with ☕ and minimal design principles
+</div>

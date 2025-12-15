@@ -15,7 +15,7 @@
 
 ## What is Shibui?
 
-Shibui is a minimal markdown-to-slides presentation app that lets you focus on your ideas, not your tooling. Write in markdown, present instantly. No templates, no distractions, no BS.
+[Shibui](https://v0-shibui.vercel.app/) is a minimal markdown-to-slides presentation app that lets you focus on your ideas, not your tooling. Write in markdown, present instantly. No templates, no distractions, no BS.
 
 
 

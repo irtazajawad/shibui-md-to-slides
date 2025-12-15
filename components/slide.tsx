@@ -170,7 +170,34 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
       continue
     }
 
-    // Check for headings
+    // Check for headings (h1-h6)
+    if (line.startsWith("###### ")) {
+      elements.push(
+        <h6 key={key++} className="text-sm md:text-base font-bold mt-2 mb-1 opacity-90">
+          {parseInlineMarkdown(line.slice(7), highlightColor)}
+        </h6>,
+      )
+      i++
+      continue
+    }
+    if (line.startsWith("##### ")) {
+      elements.push(
+        <h5 key={key++} className="text-base md:text-lg font-bold mt-2 mb-1 opacity-90">
+          {parseInlineMarkdown(line.slice(6), highlightColor)}
+        </h5>,
+      )
+      i++
+      continue
+    }
+    if (line.startsWith("#### ")) {
+      elements.push(
+        <h4 key={key++} className="text-lg md:text-xl font-bold mt-3 mb-2">
+          {parseInlineMarkdown(line.slice(5), highlightColor)}
+        </h4>,
+      )
+      i++
+      continue
+    }
     if (line.startsWith("### ")) {
       elements.push(
         <h3 key={key++} className="text-2xl md:text-3xl font-bold mt-4 mb-2">
@@ -271,11 +298,23 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     // Handle escaped characters (backslash escapes)
     if (remaining.startsWith("\\")) {
       const nextChar = remaining[1]
-      if (nextChar && /[\\`*_{}[\]()#+\-.!|$]/.test(nextChar)) {
+      if (nextChar && /[\\`*_{}[\]()#+\-.!|$~<>]/.test(nextChar)) {
         parts.push(nextChar)
         remaining = remaining.slice(2)
         continue
       }
+    }
+
+    // Bold and italic with ***
+    const boldItalicMatch = remaining.match(/^\*\*\*(.+?)\*\*\*/)
+    if (boldItalicMatch) {
+      parts.push(
+        <strong key={key++} className="font-bold italic" style={{ color: highlightColor }}>
+          {parseInlineMarkdown(boldItalicMatch[1], highlightColor)}
+        </strong>,
+      )
+      remaining = remaining.slice(boldItalicMatch[0].length)
+      continue
     }
 
     // Bold with **
@@ -302,6 +341,54 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
       continue
     }
 
+    // Strikethrough with ~~
+    const strikeMatch = remaining.match(/^~~(.+?)~~/)
+    if (strikeMatch) {
+      parts.push(
+        <span key={key++} className="line-through">
+          {parseInlineMarkdown(strikeMatch[1], highlightColor)}
+        </span>,
+      )
+      remaining = remaining.slice(strikeMatch[0].length)
+      continue
+    }
+
+    // Underline with <u>
+    const underlineMatch = remaining.match(/^<u>(.+?)<\/u>/)
+    if (underlineMatch) {
+      parts.push(
+        <u key={key++}>
+          {parseInlineMarkdown(underlineMatch[1], highlightColor)}
+        </u>,
+      )
+      remaining = remaining.slice(underlineMatch[0].length)
+      continue
+    }
+
+    // Subscript with <sub>
+    const subscriptMatch = remaining.match(/^<sub>(.+?)<\/sub>/)
+    if (subscriptMatch) {
+      parts.push(
+        <sub key={key++}>
+          {parseInlineMarkdown(subscriptMatch[1], highlightColor)}
+        </sub>,
+      )
+      remaining = remaining.slice(subscriptMatch[0].length)
+      continue
+    }
+
+    // Superscript with <sup>
+    const superscriptMatch = remaining.match(/^<sup>(.+?)<\/sup>/)
+    if (superscriptMatch) {
+      parts.push(
+        <sup key={key++}>
+          {parseInlineMarkdown(superscriptMatch[1], highlightColor)}
+        </sup>,
+      )
+      remaining = remaining.slice(superscriptMatch[0].length)
+      continue
+    }
+
     // Inline code with `
     const codeMatch = remaining.match(/^`([^`]+)`/)
     if (codeMatch) {
@@ -311,6 +398,25 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
         </code>,
       )
       remaining = remaining.slice(codeMatch[0].length)
+      continue
+    }
+
+    // Inline links with [text](url)
+    const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/)
+    if (linkMatch) {
+      parts.push(
+        <a
+          key={key++}
+          href={linkMatch[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:opacity-80 transition-opacity"
+          style={{ color: highlightColor }}
+        >
+          {linkMatch[1]}
+        </a>,
+      )
+      remaining = remaining.slice(linkMatch[0].length)
       continue
     }
 
@@ -346,7 +452,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
     }
 
     // Regular text until next special character
-    const textMatch = remaining.match(/^[^*`⭐$\\]+/)
+    const textMatch = remaining.match(/^[^*`⭐$\\~<\[]+/)
     if (textMatch) {
       parts.push(textMatch[0])
       remaining = remaining.slice(textMatch[0].length)

@@ -237,20 +237,70 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
       continue
     }
 
-    // Check for unordered list items (both - and * bullets)
+    // Check for unordered list items (both - and * bullets, with nesting support)
     if (line.trim().startsWith("- ") || line.trim().startsWith("* ")) {
-      const listItems: string[] = []
-      while (i < lines.length && (lines[i].trim().startsWith("- ") || lines[i].trim().startsWith("* "))) {
-        listItems.push(lines[i].trim().slice(2))
+      const listLines: { indent: number; text: string }[] = []
+
+      while (i < lines.length) {
+        const currentLine = lines[i]
+        const trimmed = currentLine.trim()
+
+        if (!trimmed.startsWith("- ") && !trimmed.startsWith("* ")) {
+          if (!trimmed) {
+            i++
+            continue
+          }
+          break
+        }
+
+        const indent = currentLine.search(/\S/)
+        const text = trimmed.slice(2)
+        listLines.push({ indent, text })
         i++
       }
+
+      const renderNestedList = (items: { indent: number; text: string }[], baseIndent: number): React.ReactNode[] => {
+        const result: React.ReactNode[] = []
+        let subKey = 0
+        let j = 0
+
+        while (j < items.length) {
+          const item = items[j]
+
+          if (item.indent === baseIndent) {
+            const children: { indent: number; text: string }[] = []
+            let k = j + 1
+
+            while (k < items.length && items[k].indent > baseIndent) {
+              children.push(items[k])
+              k++
+            }
+
+            result.push(
+              <li key={subKey++} className="text-lg md:text-xl">
+                {parseInlineMarkdown(item.text, highlightColor)}
+                {children.length > 0 && (
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                    {renderNestedList(children, Math.min(...children.map(c => c.indent)))}
+                  </ul>
+                )}
+              </li>
+            )
+
+            j = k
+          } else {
+            j++
+          }
+        }
+
+        return result
+      }
+
+      const minIndent = Math.min(...listLines.map(item => item.indent))
+
       elements.push(
         <ul key={key++} className="list-disc pl-8 my-4 space-y-3">
-          {listItems.map((item, idx) => (
-            <li key={idx} className="text-lg md:text-xl">
-              {parseInlineMarkdown(item, highlightColor)}
-            </li>
-          ))}
+          {renderNestedList(listLines, minIndent)}
         </ul>,
       )
       continue

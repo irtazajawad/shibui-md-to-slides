@@ -62,7 +62,7 @@ Shibui is a minimal markdown-to-slides presentation app that lets you focus on y
 
 Each slide is separated by `---` (three hyphens):
 
-\`\`\`markdown
+````markdown
 # Main Title
 ## Subtitle
 
@@ -78,7 +78,7 @@ Each slide is separated by `---` (three hyphens):
 ## Another Slide
 
 Your content here...
-\`\`\`
+````
 
 ### Slide Structure
 
@@ -92,23 +92,37 @@ Your content here...
 - `←` or `Left Arrow` - Previous slide
 
 
+
 ## 🛠️ Local Development
 
-\`\`\`bash
+### Prerequisites
+
+- Node.js 18+ or later
+- pnpm or npm
+
+### Setup
+
+```bash
 # Clone the repository
-git clone https://github.com/irtazajawad/markdown-to-slides.git
+git https://github.com/irtazajawad/shibui-md-to-slides.git
 
 # Navigate to the project
-cd markdown-to-slides
+cd shibui-md-to-slides
 
 # Install dependencies
 pnpm install
+# or
+npm install
 
 # Run development server
 pnpm dev
-\`\`\`
+# or
+npm run dev
+```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
+
+
 
 
 ## 🏗️ Built With

@@ -111,7 +111,7 @@ export default function WelcomeScreen({ onUpload, onCreate, onRestore, hasSavedP
           <span>Created by <a href="https://www.linkedin.com/in/irtaza-ahmed-958202249/" target="_blank" rel="noopener noreferrer" className="font-medium text-foreground hover:underline">Irtaza Ahmed</a></span>
           <span className="text-foreground/20">•</span>
           <a
-            href="https://github.com/irtazajawad/markdown-to-slides.git"
+            href="https://github.com/irtazajawad/shibui-md-to-slides.git"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 hover:text-foreground transition-colors"

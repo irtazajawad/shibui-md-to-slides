@@ -228,12 +228,37 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
 
     // Check for blockquotes
     if (line.startsWith("> ")) {
+      const quoteLines: string[] = []
+      
+      // Collect all lines that are part of the blockquote
+      while (i < lines.length) {
+        const currentLine = lines[i]
+        
+        // If line starts with >, add its content
+        if (currentLine.startsWith("> ")) {
+          quoteLines.push(currentLine.slice(2))
+          i++
+        }
+        // If line doesn't start with > but is not empty and previous line had content,
+        // it's a continuation (like attribution lines)
+        else if (currentLine.trim() && quoteLines.length > 0) {
+          quoteLines.push(currentLine)
+          i++
+        }
+        // Empty line or start of new block - end blockquote
+        else {
+          break
+        }
+      }
+      
+      // Join lines with line breaks
+      const quoteContent = quoteLines.join("\n")
+      
       elements.push(
-        <blockquote key={key++} className="border-l-4 border-primary pl-6 italic my-4 text-lg md:text-xl opacity-80">
-          {parseInlineMarkdown(line.slice(2), highlightColor)}
+        <blockquote key={key++} className="border-l-4 border-primary pl-6 italic my-4 text-lg md:text-xl opacity-80 whitespace-pre-line">
+          {parseInlineMarkdown(quoteContent, highlightColor)}
         </blockquote>,
       )
-      i++
       continue
     }
 

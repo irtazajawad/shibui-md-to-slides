@@ -229,11 +229,11 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
     // Check for blockquotes
     if (line.startsWith("> ")) {
       const quoteLines: string[] = []
-      
+
       // Collect all lines that are part of the blockquote
       while (i < lines.length) {
         const currentLine = lines[i]
-        
+
         // If line starts with >, add its content
         if (currentLine.startsWith("> ")) {
           quoteLines.push(currentLine.slice(2))
@@ -250,10 +250,10 @@ function parseMarkdownToJSX(content: string, highlightColor: string): React.Reac
           break
         }
       }
-      
+
       // Join lines with line breaks
       const quoteContent = quoteLines.join("\n")
-      
+
       elements.push(
         <blockquote key={key++} className="border-l-4 border-primary pl-6 italic my-4 text-lg md:text-xl opacity-80 whitespace-pre-line">
           {parseInlineMarkdown(quoteContent, highlightColor)}

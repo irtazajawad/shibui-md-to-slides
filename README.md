@@ -86,12 +86,6 @@ Your content here...
 - Use `##` for regular slide titles
 - Add content below headings
 
-### Keyboard Shortcuts
-
-- `→` or `Right Arrow` - Next slide
-- `←` or `Left Arrow` - Previous slide
-
-
 
 ## 🛠️ Local Development
 
@@ -146,15 +140,3 @@ Contributions are welcome! This project was built over a weekend, so there's ple
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-
-
-## 🙏 Acknowledgments
-
-Built with frustration from existing tools and a weekend of coding. If you find this useful, star the repo ⭐
-
-
-
-<div align="center">
-  Made with ☕ and minimal design principles
-</div>

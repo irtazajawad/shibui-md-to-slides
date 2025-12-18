@@ -520,11 +520,18 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
 export default function Slide({ slide, isHeadingSlide, highlightColor, textColor }: SlideProps) {
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).hljs) {
+      // Remove previous highlighting to allow re-highlighting with new language
+      document.querySelectorAll("pre code.hljs").forEach((el) => {
+        el.removeAttribute("data-highlighted")
+        el.className = el.className.replace(/\bhljs-[^\s]*/g, "").replace(/\bhljs\b/, "").trim()
+      })
+
+      // Apply highlighting to all code blocks
       document.querySelectorAll("pre code").forEach((el) => {
         ; (window as any).hljs.highlightElement(el)
       })
     }
-  }, [slide])
+  }, [slide.title, slide.content])
 
   if (isHeadingSlide) {
     // Check if content starts with ## (subtitle) and extract it cleanly

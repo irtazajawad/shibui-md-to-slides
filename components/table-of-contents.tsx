@@ -20,7 +20,7 @@ export default function TableOfContents({ slides, currentIndex, onSelectSlide }:
             }`}
           >
             <span className="text-sm font-bold">{index + 1}.</span>
-            <span className="ml-2 text-sm font-serif line-clamp-2">{slide.title || "Untitled"}</span>
+            <span className="ml-2 text-sm font-[family-name:var(--font-roboto)] line-clamp-2">{slide.title || "Untitled"}</span>
           </button>
         ))}
       </nav>

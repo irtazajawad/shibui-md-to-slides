@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, EB_Garamond } from "next/font/google"
+import { Geist, Geist_Mono, EB_Garamond, Roboto } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
@@ -8,6 +8,7 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 // <CHANGE> Add EB Garamond serif font for presentation
 const _ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500", "700", "800"] })
+const _roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] })
 
 export const metadata: Metadata = {
   title: "Shibui - Markdown Slides",

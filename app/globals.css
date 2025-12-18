@@ -80,6 +80,7 @@
   --font-sans: "Geist", "Geist Fallback";
   --font-mono: "Geist Mono", "Geist Mono Fallback";
   --font-serif: "EB Garamond", serif;
+  --font-roboto: "Roboto", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

@@ -315,22 +315,24 @@ export default function Home() {
         {/* Navigation controls */}
         <div className="h-16 border-t border-border flex items-center justify-between px-6 bg-card">
           <div className="w-32"></div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
-              disabled={currentSlideIndex === 0}
-              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              ← Previous
-            </button>
-            <button
-              onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
-              disabled={currentSlideIndex === slides.length - 1}
-              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              Next →
-            </button>
-          </div>
+          {!isFullscreen && (
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setCurrentSlideIndex((i) => Math.max(i - 1, 0))}
+                disabled={currentSlideIndex === 0}
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                ← Previous
+              </button>
+              <button
+                onClick={() => setCurrentSlideIndex((i) => Math.min(i + 1, slides.length - 1))}
+                disabled={currentSlideIndex === slides.length - 1}
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                Next →
+              </button>
+            </div>
+          )}
           {/* Zoom controls */}
           <div className="flex items-center gap-1">
             <button

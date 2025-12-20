@@ -39,7 +39,7 @@ export default function PresentationSlides({
   const currentSlide = slides[currentIndex] || { title: "", content: "", isHeadingSlide: false }
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-4 md:p-8 lg:p-12">
+    <div className="h-full w-full flex items-center justify-center p-4 md:p-8 lg:p-12 slide-capture-area">
       <div className="w-full max-w-6xl">
         <Slide
           slide={currentSlide}

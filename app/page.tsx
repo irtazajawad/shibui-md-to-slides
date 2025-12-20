@@ -113,6 +113,8 @@ export default function Home() {
   const [textColor, setTextColor] = useState("#1a1a1a")
   const [zoomLevel, setZoomLevel] = useState(100)
   const [hasSavedPresentation, setHasSavedPresentation] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadProgress, setDownloadProgress] = useState(0)
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -201,6 +203,75 @@ export default function Home() {
     }
   }
 
+  const handleDownloadSlides = async () => {
+    setIsDownloading(true)
+    setDownloadProgress(0)
+
+    const originalSlideIndex = currentSlideIndex
+
+    try {
+      const { domToBlob } = await import('modern-screenshot')
+      const JSZip = (await import('jszip')).default
+      const zip = new JSZip()
+
+      const slideContainer = document.querySelector('.slide-capture-area')
+      
+      if (!slideContainer) {
+        throw new Error('Slide container not found')
+      }
+
+      const originalPadding = (slideContainer as HTMLElement).style.padding
+
+      for (let i = 0; i < slides.length; i++) {
+        setCurrentSlideIndex(i)
+        
+        // Reduce padding for tighter zoom
+        ; (slideContainer as HTMLElement).style.padding = '40px'
+        
+        // Wait for render
+        await new Promise(resolve => setTimeout(resolve, 400))
+        await document.fonts.ready
+
+        // Capture with modern-screenshot - better CSS support
+        const blob = await domToBlob(slideContainer as HTMLElement, {
+          width: 1920,
+          height: 1080,
+          scale: 2,
+          backgroundColor: '#fffdfb',
+          style: {
+            transform: 'scale(1.4)',
+            transformOrigin: 'center center',
+          },
+        })
+
+        // Restore padding
+        ; (slideContainer as HTMLElement).style.padding = originalPadding
+        
+        zip.file(`${i + 1}.png`, blob)
+        setDownloadProgress(Math.round(((i + 1) / slides.length) * 100))
+      }
+
+      // Download zip
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      const url = URL.createObjectURL(zipBlob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'slides.zip'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      setCurrentSlideIndex(originalSlideIndex)
+    } catch (error) {
+      console.error('Failed to download slides:', error)
+      setCurrentSlideIndex(originalSlideIndex)
+    } finally {
+      setIsDownloading(false)
+      setDownloadProgress(0)
+    }
+  }
+
   if (!markdown) {
     return <WelcomeScreen onUpload={handleUpload} onCreate={handleCreate} onRestore={handleRestore} hasSavedPresentation={hasSavedPresentation} />
   }
@@ -243,6 +314,16 @@ export default function Home() {
             Slide {currentSlideIndex + 1} of {slides.length}
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadSlides}
+              disabled={isDownloading}
+              className="p-2 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Download as PNG Images"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
             <button
               onClick={handleReset}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -370,6 +451,29 @@ export default function Home() {
           onTextColorChange={setTextColor}
           onClose={() => setEditorOpen(false)}
         />
+      )}
+
+      {/* Download Progress Indicator */}
+      {isDownloading && (
+        <div className="fixed bottom-6 right-6 bg-card border border-border rounded-lg shadow-lg p-4 w-72 z-50">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="animate-spin">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-foreground">Capturing slides...</div>
+              <div className="text-xs text-muted-foreground">{downloadProgress}% complete</div>
+            </div>
+          </div>
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+            <div 
+              className="bg-primary h-full transition-all duration-300 ease-out"
+              style={{ width: `${downloadProgress}%` }}
+            />
+          </div>
+        </div>
       )}
     </div>
   )

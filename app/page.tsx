@@ -267,6 +267,30 @@ export default function Home() {
         URL.revokeObjectURL(url)
       } else if (format === 'pdf') {
         setDownloadStatus('Generating PDF...')
+
+        // Use canvas to convert blobs to optimized data URLs faster
+        const canvas = document.createElement('canvas')
+        canvas.width = 1920
+        canvas.height = 1080
+        const ctx = canvas.getContext('2d')!
+
+        const imageDataPromises = imageBlobs.map(async (blob) => {
+          const img = new Image()
+          const url = URL.createObjectURL(blob)
+
+          return new Promise<string>((resolve) => {
+            img.onload = () => {
+              ctx.clearRect(0, 0, 1920, 1080)
+              ctx.drawImage(img, 0, 0, 1920, 1080)
+              URL.revokeObjectURL(url)
+              resolve(canvas.toDataURL('image/jpeg', 1.0))
+            }
+            img.src = url
+          })
+        })
+
+        const imageDatas = await Promise.all(imageDataPromises)
+
         const { jsPDF } = await import('jspdf')
         const pdf = new jsPDF({
           orientation: 'landscape',
@@ -275,16 +299,10 @@ export default function Home() {
           compress: true,
         })
 
-        for (let i = 0; i < imageBlobs.length; i++) {
-          const imageData = await new Promise<string>((resolve) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result as string)
-            reader.readAsDataURL(imageBlobs[i])
-          })
-
+        imageDatas.forEach((imageData, i) => {
           if (i > 0) pdf.addPage()
-          pdf.addImage(imageData, 'PNG', 0, 0, 1920, 1080, undefined, 'FAST')
-        }
+          pdf.addImage(imageData, 'JPEG', 0, 0, 1920, 1080, undefined, 'FAST')
+        })
 
         pdf.save('slides.pdf')
       } else if (format === 'pptx') {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import PresentationSlides from "@/components/presentation-slides"
 import TableOfContents from "@/components/table-of-contents"
 import MarkdownEditor from "@/components/markdown-editor"
@@ -117,6 +117,7 @@ export default function Home() {
   const [downloadProgress, setDownloadProgress] = useState(0)
   const [downloadStatus, setDownloadStatus] = useState('')
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
+  const cancelDownloadRef = useRef(false)
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -221,6 +222,7 @@ export default function Home() {
   }
 
   const handleDownloadSlides = async (format: 'png' | 'pdf' | 'pptx') => {
+    cancelDownloadRef.current = false
     setIsDownloading(true)
     setDownloadProgress(0)
     setDownloadStatus('Capturing slides...')
@@ -242,6 +244,11 @@ export default function Home() {
 
       // Capture all slides
       for (let i = 0; i < slides.length; i++) {
+        if (cancelDownloadRef.current) {
+          setCurrentSlideIndex(originalSlideIndex)
+          return
+        }
+
         setCurrentSlideIndex(i)
           ; (slideContainer as HTMLElement).style.padding = '40px'
 
@@ -262,6 +269,12 @@ export default function Home() {
           ; (slideContainer as HTMLElement).style.padding = originalPadding
         imageBlobs.push(blob)
         setDownloadProgress(Math.round(((i + 1) / slides.length) * 100))
+      }
+
+      // Check if cancelled before generating output
+      if (cancelDownloadRef.current) {
+        setCurrentSlideIndex(originalSlideIndex)
+        return
       }
 
       // Generate output based on format
@@ -576,6 +589,18 @@ export default function Home() {
               <div className="text-sm font-medium text-foreground">{downloadStatus}</div>
               <div className="text-xs text-muted-foreground">{downloadProgress}% complete</div>
             </div>
+            <button
+              onClick={() => {
+                cancelDownloadRef.current = true
+                setDownloadStatus('Cancelling...')
+              }}
+              className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+              title="Cancel download"
+            >
+              <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
           <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
             <div

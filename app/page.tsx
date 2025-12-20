@@ -250,11 +250,15 @@ export default function Home() {
         const blob = await domToBlob(slideContainer as HTMLElement, {
           width: 1920,
           height: 1080,
-          scale: 2,
+          scale: 3,
           backgroundColor: '#fffdfb',
+          quality: 1,
           style: {
             transform: 'scale(1.4)',
             transformOrigin: 'center center',
+            fontSmooth: 'always',
+            WebkitFontSmoothing: 'antialiased',
+            textRendering: 'optimizeLegibility',
           },
         })
 

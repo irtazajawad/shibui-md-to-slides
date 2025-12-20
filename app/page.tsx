@@ -256,9 +256,6 @@ export default function Home() {
           style: {
             transform: 'scale(1.4)',
             transformOrigin: 'center center',
-            fontSmooth: 'always',
-            WebkitFontSmoothing: 'antialiased',
-            textRendering: 'optimizeLegibility',
           },
         })
 

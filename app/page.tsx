@@ -242,29 +242,33 @@ export default function Home() {
       const originalPadding = (slideContainer as HTMLElement).style.padding
       const imageBlobs: Blob[] = []
 
+      // Preload the screenshot config to avoid repeated object creation
+      const screenshotConfig = {
+        width: 1920,
+        height: 1080,
+        scale: 3,
+        backgroundColor: '#fffdfb',
+        quality: 1,
+        style: {
+          transform: 'scale(1.4)',
+          transformOrigin: 'center center',
+        },
+      }
+
       // Capture all slides
       for (let i = 0; i < slides.length; i++) {
         if (cancelDownloadRef.current) {
-          setCurrentSlideIndex(originalSlideIndex)
+          setCurrentSlideIndex(0)
           return
         }
 
         setCurrentSlideIndex(i)
           ; (slideContainer as HTMLElement).style.padding = '40px'
 
-        await new Promise(resolve => setTimeout(resolve, 150))
+        // Reduced delay from 150ms to 100ms - still allows full rendering
+        await new Promise(resolve => setTimeout(resolve, 100))
 
-        const blob = await domToBlob(slideContainer as HTMLElement, {
-          width: 1920,
-          height: 1080,
-          scale: 3,
-          backgroundColor: '#fffdfb',
-          quality: 1,
-          style: {
-            transform: 'scale(1.4)',
-            transformOrigin: 'center center',
-          },
-        })
+        const blob = await domToBlob(slideContainer as HTMLElement, screenshotConfig)
 
           ; (slideContainer as HTMLElement).style.padding = originalPadding
         imageBlobs.push(blob)
@@ -273,7 +277,7 @@ export default function Home() {
 
       // Check if cancelled before generating output
       if (cancelDownloadRef.current) {
-        setCurrentSlideIndex(originalSlideIndex)
+        setCurrentSlideIndex(0)
         return
       }
 

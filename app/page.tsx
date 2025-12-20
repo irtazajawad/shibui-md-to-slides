@@ -126,6 +126,21 @@ export default function Home() {
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
 
+  // Close download menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showDownloadMenu) {
+        const target = event.target as HTMLElement
+        if (!target.closest('.download-menu-container')) {
+          setShowDownloadMenu(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showDownloadMenu])
+
   // Check for saved presentation on client-side only
   useEffect(() => {
     try {

@@ -115,6 +115,8 @@ export default function Home() {
   const [hasSavedPresentation, setHasSavedPresentation] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const [downloadStatus, setDownloadStatus] = useState('')
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false)
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -203,17 +205,17 @@ export default function Home() {
     }
   }
 
-  const handleDownloadSlides = async () => {
+  const handleDownloadSlides = async (format: 'png' | 'pdf' | 'pptx') => {
     setIsDownloading(true)
     setDownloadProgress(0)
+    setDownloadStatus('Capturing slides...')
+    setShowDownloadMenu(false)
 
     const originalSlideIndex = currentSlideIndex
 
     try {
       const { domToBlob } = await import('modern-screenshot')
-      const JSZip = (await import('jszip')).default
-      const zip = new JSZip()
-
+      
       const slideContainer = document.querySelector('.slide-capture-area')
 
       if (!slideContainer) {
@@ -221,17 +223,15 @@ export default function Home() {
       }
 
       const originalPadding = (slideContainer as HTMLElement).style.padding
+      const imageBlobs: Blob[] = []
 
+      // Capture all slides
       for (let i = 0; i < slides.length; i++) {
         setCurrentSlideIndex(i)
+        ; (slideContainer as HTMLElement).style.padding = '40px'
 
-          // Reduce padding for tighter zoom
-          ; (slideContainer as HTMLElement).style.padding = '40px'
-
-        // Minimal wait for render - fonts should already be loaded
         await new Promise(resolve => setTimeout(resolve, 150))
 
-        // Capture with modern-screenshot - better CSS support
         const blob = await domToBlob(slideContainer as HTMLElement, {
           width: 1920,
           height: 1080,
@@ -243,23 +243,75 @@ export default function Home() {
           },
         })
 
-          // Restore padding
-          ; (slideContainer as HTMLElement).style.padding = originalPadding
-
-        zip.file(`${i + 1}.png`, blob)
+        ; (slideContainer as HTMLElement).style.padding = originalPadding
+        imageBlobs.push(blob)
         setDownloadProgress(Math.round(((i + 1) / slides.length) * 100))
       }
 
-      // Download zip
-      const zipBlob = await zip.generateAsync({ type: 'blob' })
-      const url = URL.createObjectURL(zipBlob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'slides.zip'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      // Generate output based on format
+      if (format === 'png') {
+        setDownloadStatus('Creating zip file...')
+        const JSZip = (await import('jszip')).default
+        const zip = new JSZip()
+        imageBlobs.forEach((blob, i) => {
+          zip.file(`${i + 1}.png`, blob)
+        })
+        const zipBlob = await zip.generateAsync({ type: 'blob' })
+        const url = URL.createObjectURL(zipBlob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'slides.zip'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      } else if (format === 'pdf') {
+        setDownloadStatus('Generating PDF...')
+        const { jsPDF } = await import('jspdf')
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [1920, 1080],
+          compress: true,
+        })
+
+        for (let i = 0; i < imageBlobs.length; i++) {
+          const imageData = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result as string)
+            reader.readAsDataURL(imageBlobs[i])
+          })
+
+          if (i > 0) pdf.addPage()
+          pdf.addImage(imageData, 'PNG', 0, 0, 1920, 1080, undefined, 'FAST')
+        }
+
+        pdf.save('slides.pdf')
+      } else if (format === 'pptx') {
+        setDownloadStatus('Generating PPTX...')
+        const pptxgen = (await import('pptxgenjs')).default
+        const pptx = new pptxgen()
+        pptx.layout = 'LAYOUT_16x9'
+
+        for (const blob of imageBlobs) {
+          const imageData = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result as string)
+            reader.readAsDataURL(blob)
+          })
+
+          const slide = pptx.addSlide()
+          slide.addImage({
+            data: imageData,
+            x: 0,
+            y: 0,
+            w: '100%',
+            h: '100%',
+          })
+        }
+
+        await pptx.writeFile({ fileName: 'slides.pptx' })
+      }
 
       setCurrentSlideIndex(originalSlideIndex)
     } catch (error) {
@@ -268,6 +320,7 @@ export default function Home() {
     } finally {
       setIsDownloading(false)
       setDownloadProgress(0)
+      setDownloadStatus('')
     }
   }
 
@@ -313,16 +366,40 @@ export default function Home() {
             Slide {currentSlideIndex + 1} of {slides.length}
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleDownloadSlides}
-              disabled={isDownloading}
-              className="p-2 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Download as PNG Images"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                disabled={isDownloading}
+                className="p-2 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Download Slides"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+              {showDownloadMenu && (
+                <div className="absolute top-full right-0 mt-2 bg-card border border-border rounded-lg shadow-lg py-1 z-50 min-w-[140px]">
+                  <button
+                    onClick={() => handleDownloadSlides('png')}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                  >
+                    PNG (Zip)
+                  </button>
+                  <button
+                    onClick={() => handleDownloadSlides('pdf')}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                  >
+                    PDF
+                  </button>
+                  <button
+                    onClick={() => handleDownloadSlides('pptx')}
+                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                  >
+                    PPTX
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleReset}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -462,7 +539,7 @@ export default function Home() {
               </svg>
             </div>
             <div className="flex-1">
-              <div className="text-sm font-medium text-foreground">Capturing slides...</div>
+              <div className="text-sm font-medium text-foreground">{downloadStatus}</div>
               <div className="text-xs text-muted-foreground">{downloadProgress}% complete</div>
             </div>
           </div>

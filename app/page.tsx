@@ -215,7 +215,7 @@ export default function Home() {
 
     try {
       const { domToBlob } = await import('modern-screenshot')
-      
+
       const slideContainer = document.querySelector('.slide-capture-area')
 
       if (!slideContainer) {
@@ -228,7 +228,7 @@ export default function Home() {
       // Capture all slides
       for (let i = 0; i < slides.length; i++) {
         setCurrentSlideIndex(i)
-        ; (slideContainer as HTMLElement).style.padding = '40px'
+          ; (slideContainer as HTMLElement).style.padding = '40px'
 
         await new Promise(resolve => setTimeout(resolve, 150))
 
@@ -243,7 +243,7 @@ export default function Home() {
           },
         })
 
-        ; (slideContainer as HTMLElement).style.padding = originalPadding
+          ; (slideContainer as HTMLElement).style.padding = originalPadding
         imageBlobs.push(blob)
         setDownloadProgress(Math.round(((i + 1) / slides.length) * 100))
       }

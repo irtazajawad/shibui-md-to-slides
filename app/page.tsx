@@ -399,7 +399,7 @@ export default function Home() {
             Slide {currentSlideIndex + 1} of {slides.length}
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative">
+            <div className="relative download-menu-container">
               <button
                 onClick={() => setShowDownloadMenu(!showDownloadMenu)}
                 disabled={isDownloading}
@@ -411,22 +411,22 @@ export default function Home() {
                 </svg>
               </button>
               {showDownloadMenu && (
-                <div className="absolute top-full right-0 mt-2 bg-card border border-border rounded-lg shadow-lg py-1 z-50 min-w-[140px]">
+                <div className="absolute top-full right-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 min-w-[140px]">
                   <button
                     onClick={() => handleDownloadSlides('png')}
-                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
                   >
-                    PNG (Zip)
+                    PNG
                   </button>
                   <button
                     onClick={() => handleDownloadSlides('pdf')}
-                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
                   >
                     PDF
                   </button>
                   <button
                     onClick={() => handleDownloadSlides('pptx')}
-                    className="w-full text-left px-4 py-2 hover:bg-muted transition-colors text-sm"
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
                   >
                     PPTX
                   </button>

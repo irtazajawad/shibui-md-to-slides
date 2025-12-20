@@ -215,7 +215,7 @@ export default function Home() {
       const zip = new JSZip()
 
       const slideContainer = document.querySelector('.slide-capture-area')
-      
+
       if (!slideContainer) {
         throw new Error('Slide container not found')
       }
@@ -224,10 +224,10 @@ export default function Home() {
 
       for (let i = 0; i < slides.length; i++) {
         setCurrentSlideIndex(i)
-        
-        // Reduce padding for tighter zoom
-        ; (slideContainer as HTMLElement).style.padding = '40px'
-        
+
+          // Reduce padding for tighter zoom
+          ; (slideContainer as HTMLElement).style.padding = '40px'
+
         // Wait for render
         await new Promise(resolve => setTimeout(resolve, 400))
         await document.fonts.ready
@@ -244,9 +244,9 @@ export default function Home() {
           },
         })
 
-        // Restore padding
-        ; (slideContainer as HTMLElement).style.padding = originalPadding
-        
+          // Restore padding
+          ; (slideContainer as HTMLElement).style.padding = originalPadding
+
         zip.file(`${i + 1}.png`, blob)
         setDownloadProgress(Math.round(((i + 1) / slides.length) * 100))
       }
@@ -468,7 +468,7 @@ export default function Home() {
             </div>
           </div>
           <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-            <div 
+            <div
               className="bg-primary h-full transition-all duration-300 ease-out"
               style={{ width: `${downloadProgress}%` }}
             />

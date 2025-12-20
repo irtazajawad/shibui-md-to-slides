@@ -228,9 +228,8 @@ export default function Home() {
           // Reduce padding for tighter zoom
           ; (slideContainer as HTMLElement).style.padding = '40px'
 
-        // Wait for render
-        await new Promise(resolve => setTimeout(resolve, 400))
-        await document.fonts.ready
+        // Minimal wait for render - fonts should already be loaded
+        await new Promise(resolve => setTimeout(resolve, 150))
 
         // Capture with modern-screenshot - better CSS support
         const blob = await domToBlob(slideContainer as HTMLElement, {

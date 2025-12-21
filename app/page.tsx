@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import PresentationSlides from "@/components/presentation-slides"
 import TableOfContents from "@/components/table-of-contents"
 import MarkdownEditor from "@/components/markdown-editor"
@@ -113,6 +113,11 @@ export default function Home() {
   const [textColor, setTextColor] = useState("#1a1a1a")
   const [zoomLevel, setZoomLevel] = useState(100)
   const [hasSavedPresentation, setHasSavedPresentation] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadProgress, setDownloadProgress] = useState(0)
+  const [downloadStatus, setDownloadStatus] = useState('')
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false)
+  const cancelDownloadRef = useRef(false)
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -121,6 +126,21 @@ export default function Home() {
     document.addEventListener("fullscreenchange", handleFullscreenChange)
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
+
+  // Close download menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showDownloadMenu) {
+        const target = event.target as HTMLElement
+        if (!target.closest('.download-menu-container')) {
+          setShowDownloadMenu(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showDownloadMenu])
 
   // Check for saved presentation on client-side only
   useEffect(() => {
@@ -201,6 +221,160 @@ export default function Home() {
     }
   }
 
+  const handleDownloadSlides = async (format: 'png' | 'pdf' | 'pptx') => {
+    cancelDownloadRef.current = false
+    setIsDownloading(true)
+    setDownloadProgress(0)
+    setDownloadStatus('Capturing slides...')
+    setShowDownloadMenu(false)
+
+    const originalSlideIndex = currentSlideIndex
+
+    try {
+      const { domToBlob } = await import('modern-screenshot')
+
+      const slideContainer = document.querySelector('.slide-capture-area')
+
+      if (!slideContainer) {
+        throw new Error('Slide container not found')
+      }
+
+      const originalPadding = (slideContainer as HTMLElement).style.padding
+      const imageBlobs: Blob[] = []
+
+      // Preload the screenshot config to avoid repeated object creation
+      const screenshotConfig = {
+        width: 1920,
+        height: 1080,
+        scale: format === 'pptx' ? 4 : 3,
+        backgroundColor: '#fffdfb',
+        quality: 1,
+        style: {
+          transform: 'scale(1.4)',
+          transformOrigin: 'center center',
+        },
+      }
+
+      // Capture all slides
+      for (let i = 0; i < slides.length; i++) {
+        if (cancelDownloadRef.current) {
+          setCurrentSlideIndex(0)
+          return
+        }
+
+        setCurrentSlideIndex(i)
+          ; (slideContainer as HTMLElement).style.padding = '40px'
+
+        // Reduced delay from 150ms to 100ms - still allows full rendering
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        const blob = await domToBlob(slideContainer as HTMLElement, screenshotConfig)
+
+          ; (slideContainer as HTMLElement).style.padding = originalPadding
+        imageBlobs.push(blob)
+        setDownloadProgress(Math.round(((i + 1) / slides.length) * 100))
+      }
+
+      // Check if cancelled before generating output
+      if (cancelDownloadRef.current) {
+        setCurrentSlideIndex(0)
+        return
+      }
+
+      // Generate output based on format
+      if (format === 'png') {
+        setDownloadStatus('Creating zip file...')
+        const JSZip = (await import('jszip')).default
+        const zip = new JSZip()
+        imageBlobs.forEach((blob, i) => {
+          zip.file(`${i + 1}.png`, blob)
+        })
+        const zipBlob = await zip.generateAsync({ type: 'blob' })
+        const url = URL.createObjectURL(zipBlob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'slides.zip'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      } else if (format === 'pdf') {
+        setDownloadStatus('Generating PDF...')
+
+        // Use canvas to convert blobs to optimized data URLs faster
+        const canvas = document.createElement('canvas')
+        canvas.width = 1920
+        canvas.height = 1080
+        const ctx = canvas.getContext('2d')!
+
+        const imageDataPromises = imageBlobs.map(async (blob) => {
+          const img = new Image()
+          const url = URL.createObjectURL(blob)
+
+          return new Promise<string>((resolve) => {
+            img.onload = () => {
+              ctx.clearRect(0, 0, 1920, 1080)
+              ctx.drawImage(img, 0, 0, 1920, 1080)
+              URL.revokeObjectURL(url)
+              resolve(canvas.toDataURL('image/jpeg', 1.0))
+            }
+            img.src = url
+          })
+        })
+
+        const imageDatas = await Promise.all(imageDataPromises)
+
+        const { jsPDF } = await import('jspdf')
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [1920, 1080],
+          compress: true,
+        })
+
+        imageDatas.forEach((imageData, i) => {
+          if (i > 0) pdf.addPage()
+          pdf.addImage(imageData, 'JPEG', 0, 0, 1920, 1080, undefined, 'FAST')
+        })
+
+        pdf.save('slides.pdf')
+      } else if (format === 'pptx') {
+        setDownloadStatus('Generating PPTX...')
+        const pptxgen = (await import('pptxgenjs')).default
+        const pptx = new pptxgen()
+        pptx.layout = 'LAYOUT_16x9'
+
+        for (const blob of imageBlobs) {
+          const imageData = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result as string)
+            reader.readAsDataURL(blob)
+          })
+
+          const slide = pptx.addSlide()
+          slide.addImage({
+            data: imageData,
+            x: 0,
+            y: 0,
+            w: '100%',
+            h: '100%',
+          })
+        }
+
+        await pptx.writeFile({ fileName: 'slides.pptx' })
+      }
+
+      setCurrentSlideIndex(originalSlideIndex)
+    } catch (error) {
+      console.error('Failed to download slides:', error)
+      setCurrentSlideIndex(originalSlideIndex)
+    } finally {
+      setIsDownloading(false)
+      setDownloadProgress(0)
+      setDownloadStatus('')
+    }
+  }
+
   if (!markdown) {
     return <WelcomeScreen onUpload={handleUpload} onCreate={handleCreate} onRestore={handleRestore} hasSavedPresentation={hasSavedPresentation} />
   }
@@ -236,13 +410,49 @@ export default function Home() {
       {/* Main slide area */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Header with controls */}
-        <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card">
-          {/* Spacer for hamburger */}
+        <div className="h-16 border-b border-border flex items-center px-6 bg-card relative">
+          {/* Left side spacer */}
           <div className="w-9"></div>
-          <div className="text-sm text-muted-foreground">
+          {/* Centered slide indicator */}
+          <div className="absolute left-1/2 -translate-x-1/2 text-sm text-muted-foreground">
             Slide {currentSlideIndex + 1} of {slides.length}
           </div>
-          <div className="flex items-center gap-2">
+          {/* Right side controls */}
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="relative download-menu-container">
+              <button
+                onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                disabled={isDownloading}
+                className="p-2 hover:bg-muted rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Download Slides"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+              {showDownloadMenu && (
+                <div className="absolute top-full right-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 min-w-[140px]">
+                  <button
+                    onClick={() => handleDownloadSlides('png')}
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
+                  >
+                    PNG
+                  </button>
+                  <button
+                    onClick={() => handleDownloadSlides('pdf')}
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
+                  >
+                    PDF
+                  </button>
+                  <button
+                    onClick={() => handleDownloadSlides('pptx')}
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
+                  >
+                    PPTX
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleReset}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -370,6 +580,41 @@ export default function Home() {
           onTextColorChange={setTextColor}
           onClose={() => setEditorOpen(false)}
         />
+      )}
+
+      {/* Download Progress Indicator */}
+      {isDownloading && (
+        <div className="fixed bottom-6 right-6 bg-card border border-border rounded-lg shadow-lg p-4 w-72 z-50">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="animate-spin">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-foreground">{downloadStatus}</div>
+              <div className="text-xs text-muted-foreground">{downloadProgress}% complete</div>
+            </div>
+            <button
+              onClick={() => {
+                cancelDownloadRef.current = true
+                setDownloadStatus('Cancelling...')
+              }}
+              className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+              title="Cancel download"
+            >
+              <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-primary h-full transition-all duration-300 ease-out"
+              style={{ width: `${downloadProgress}%` }}
+            />
+          </div>
+        </div>
       )}
     </div>
   )

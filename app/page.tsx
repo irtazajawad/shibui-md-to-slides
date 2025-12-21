@@ -410,13 +410,15 @@ export default function Home() {
       {/* Main slide area */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Header with controls */}
-        <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card">
-          {/* Spacer for hamburger */}
+        <div className="h-16 border-b border-border flex items-center px-6 bg-card relative">
+          {/* Left side spacer */}
           <div className="w-9"></div>
-          <div className="text-sm text-muted-foreground">
+          {/* Centered slide indicator */}
+          <div className="absolute left-1/2 -translate-x-1/2 text-sm text-muted-foreground">
             Slide {currentSlideIndex + 1} of {slides.length}
           </div>
-          <div className="flex items-center gap-2">
+          {/* Right side controls */}
+          <div className="flex items-center gap-2 ml-auto">
             <div className="relative download-menu-container">
               <button
                 onClick={() => setShowDownloadMenu(!showDownloadMenu)}

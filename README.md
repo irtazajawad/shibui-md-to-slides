@@ -5,7 +5,7 @@
   
   ### An extremely minimal markdown presentation app
   
-  *Vibe coded over a weekend, born out of mild frustration and a free weekend.*
+  *Built over a weekend, born out of mild frustration and a free weekend.*
 
   [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com/irtazas-projects-4e638e3d/markdown-to-slides)
   
@@ -25,16 +25,19 @@
 - **📝 Markdown Editor** - Built-in editor with live preview
 - **📤 File Upload** - Drop in your `.md` files and start presenting
 - **🎨 Syntax Highlighting** - Beautiful code blocks with highlight.js
-- **🧮 LaTeX Math** - Full KaTeX support for equations
+- **🔢 LaTeX Math** - Full KaTeX support for equations
 - **📊 Tables** - Clean, readable table rendering
-- **🎯 Slide Navigation** - Keyboard shortcuts (←/→) and visual controls
+- **⬇️ Download Slides** - Download slides as static images as PNGs, PDF, or PPTX
+- **🧠 LLM-Ready** Perfect for those .md summaries and reports you get from GPT-4, Claude, etc.
+
 
 ### Text Formatting
 - **Bold** for emphasis
 - *Italic* for tone
 - `Inline code` with backticks
-- Lists (both `*` and `-` bullets)
+- Lists 
 - Blockquotes
+- Highlight Text
 
 ### Advanced Features
 - **LaTeX Math Support**
@@ -48,15 +51,6 @@
 - **Table of Contents** for easy navigation
 - **Restore Previous Presentation** - Accidentally hit the new button? No worries.
 
-
-## 📖 How to Use
-
-### Getting Started
-
-1. **Visit the app** at your deployment URL
-2. **Choose your starting point:**
-   - Click **Upload Markdown** to import an existing `.md` file
-   - Click **Create New** to start with a sample presentation
 
 ### Creating Slides
 

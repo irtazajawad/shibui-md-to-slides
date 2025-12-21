@@ -246,7 +246,7 @@ export default function Home() {
       const screenshotConfig = {
         width: 1920,
         height: 1080,
-        scale: 3,
+        scale: format === 'pptx'  ? 4 : 3,
         backgroundColor: '#fffdfb',
         quality: 1,
         style: {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useLayoutEffect } from "react"
 
 /**
  * Counts slides by counting --- separators (ignoring those in code blocks)
@@ -63,9 +63,17 @@ export default function MarkdownEditor({
   const [textHexInput, setTextHexInput] = useState(textColor)
   const [visibleSlide, setVisibleSlide] = useState(currentSlideIndex + 1)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  // Simple undo/redo history
+  const historyRef = useRef<Array<{ value: string; start: number; end: number }>>([])
+  const historyIndexRef = useRef<number>(-1)
+  // Selection to apply after programmatic content changes (undo/redo)
+  const pendingSelectionRef = useRef<{ start: number; end: number } | null>(null)
 
   useEffect(() => {
     setContent(markdown)
+    // Reset history when incoming markdown changes
+    historyRef.current = [{ value: markdown, start: 0, end: 0 }]
+    historyIndexRef.current = 0
   }, [markdown])
 
   // Scroll to current slide when editor opens
@@ -113,6 +121,62 @@ export default function MarkdownEditor({
     onClose()
   }
 
+  const pushHistory = (snapshot: { value: string; start: number; end: number }) => {
+    const stack = historyRef.current
+    const idx = historyIndexRef.current
+    // If we have undone some steps and then type, drop redo branch
+    if (idx < stack.length - 1) {
+      stack.splice(idx + 1)
+    }
+    const last = stack[stack.length - 1]
+    if (!last || last.value !== snapshot.value || last.start !== snapshot.start || last.end !== snapshot.end) {
+      stack.push(snapshot)
+      // Cap history size
+      if (stack.length > 500) stack.shift()
+      historyIndexRef.current = stack.length - 1
+    }
+  }
+
+  const restoreSelection = (start: number, end: number) => {
+    const ta = textareaRef.current
+    if (!ta) return
+    try {
+      ta.selectionStart = start
+      ta.selectionEnd = end
+    } catch {}
+    ta.focus()
+    // Ensure visible slide recalculates after undo/redo
+    setTimeout(handleScroll, 0)
+  }
+
+  // Apply any pending selection right after React commits content changes
+  useLayoutEffect(() => {
+    if (pendingSelectionRef.current) {
+      const { start, end } = pendingSelectionRef.current
+      pendingSelectionRef.current = null
+      restoreSelection(start, end)
+    }
+  }, [content])
+
+  const undo = () => {
+    const idx = historyIndexRef.current
+    if (idx <= 0) return
+    const prev = historyRef.current[idx - 1]
+    historyIndexRef.current = idx - 1
+    pendingSelectionRef.current = { start: prev.start, end: prev.end }
+    setContent(prev.value)
+  }
+
+  const redo = () => {
+    const idx = historyIndexRef.current
+    const stack = historyRef.current
+    if (idx >= stack.length - 1) return
+    const next = stack[idx + 1]
+    historyIndexRef.current = idx + 1
+    pendingSelectionRef.current = { start: next.start, end: next.end }
+    setContent(next.value)
+  }
+
   const handleColorChange = (newColor: string) => {
     setColor(newColor)
     setHexInput(newColor.replace(/^#/, ""))
@@ -123,6 +187,22 @@ export default function MarkdownEditor({
     setTxtColor(newColor)
     setTextHexInput(newColor.replace(/^#/, ""))
     onTextColorChange(newColor)
+  }
+
+  // Keep the latest caret/selection paired with the current history entry.
+  const updateCurrentSnapshotSelection = (start: number, end: number) => {
+    const idx = historyIndexRef.current
+    if (idx < 0) return
+    const snap = historyRef.current[idx]
+    if (!snap) return
+    snap.start = start
+    snap.end = end
+  }
+
+  // When user changes selection (mouse or keyboard), update snapshot selection.
+  const handleSelect: React.ReactEventHandler<HTMLTextAreaElement> = (e) => {
+    const ta = e.currentTarget
+    updateCurrentSnapshotSelection(ta.selectionStart, ta.selectionEnd)
   }
 
   // Calculate which slide is visible based on scroll position
@@ -176,6 +256,23 @@ export default function MarkdownEditor({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const meta = e.metaKey || e.ctrlKey
+    // Undo / Redo shortcuts
+    if (meta && e.key.toLowerCase() === "z") {
+      e.preventDefault()
+      if (e.shiftKey) {
+        redo()
+      } else {
+        undo()
+      }
+      return
+    }
+    if (meta && e.key.toLowerCase() === "y") {
+      e.preventDefault()
+      redo()
+      return
+    }
+
     if (e.key === "Tab") {
       e.preventDefault()
       const textarea = e.currentTarget
@@ -380,9 +477,16 @@ export default function MarkdownEditor({
             value={content}
             onChange={(e) => {
               setContent(e.target.value)
+              // Record snapshot for undo/redo
+              pushHistory({
+                value: e.target.value,
+                start: e.currentTarget.selectionStart,
+                end: e.currentTarget.selectionEnd,
+              })
               // Recalculate visible slide after content changes
               setTimeout(handleScroll, 0)
             }}
+            onSelect={handleSelect}
             onKeyDown={handleKeyDown}
             onScroll={handleScroll}
             className="w-full h-full resize-none bg-background border border-border rounded-lg p-4 font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 leading-relaxed"

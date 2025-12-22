@@ -143,7 +143,7 @@ export default function MarkdownEditor({
     try {
       ta.selectionStart = start
       ta.selectionEnd = end
-    } catch {}
+    } catch { }
     ta.focus()
     // Ensure visible slide recalculates after undo/redo
     setTimeout(handleScroll, 0)

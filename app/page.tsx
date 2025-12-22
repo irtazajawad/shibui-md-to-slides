@@ -221,12 +221,34 @@ export default function Home() {
     }
   }
 
-  const handleDownloadSlides = async (format: 'png' | 'pdf' | 'pptx') => {
+  const handleDownloadSlides = async (format: 'png' | 'pdf' | 'pptx' | 'md') => {
     cancelDownloadRef.current = false
     setIsDownloading(true)
     setDownloadProgress(0)
-    setDownloadStatus('Capturing slides...')
+    setDownloadStatus(format === 'md' ? 'Preparing markdown...' : 'Capturing slides...')
     setShowDownloadMenu(false)
+
+    // Handle markdown download separately (no screenshot needed)
+    if (format === 'md') {
+      try {
+        const blob = new Blob([markdown || ''], { type: 'text/markdown' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'presentation.md'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error('Failed to download markdown:', error)
+      } finally {
+        setIsDownloading(false)
+        setDownloadProgress(0)
+        setDownloadStatus('')
+      }
+      return
+    }
 
     const originalSlideIndex = currentSlideIndex
 
@@ -432,6 +454,12 @@ export default function Home() {
               </button>
               {showDownloadMenu && (
                 <div className="absolute top-full right-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-50 min-w-[140px]">
+                  <button
+                    onClick={() => handleDownloadSlides('md')}
+                    className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"
+                  >
+                    Markdown
+                  </button>
                   <button
                     onClick={() => handleDownloadSlides('png')}
                     className="w-full text-left px-4 py-2 hover:bg-black hover:text-white transition-colors text-sm rounded-md"

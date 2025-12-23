@@ -111,6 +111,7 @@ export default function Home() {
   const [slides, setSlides] = useState<Slide[]>([])
   const [highlightColor, setHighlightColor] = useState("#000000")
   const [textColor, setTextColor] = useState("#1a1a1a")
+  const [slideFont, setSlideFont] = useState<'libre' | 'eb'>("eb")
   const [zoomLevel, setZoomLevel] = useState(100)
   const [hasSavedPresentation, setHasSavedPresentation] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
@@ -544,6 +545,7 @@ export default function Home() {
                 highlightColor={highlightColor}
                 textColor={textColor}
                 editorOpen={editorOpen}
+                fontFamily={slideFont}
               />
             </div>
           </div>
@@ -607,6 +609,8 @@ export default function Home() {
           onColorChange={setHighlightColor}
           onTextColorChange={setTextColor}
           onClose={() => setEditorOpen(false)}
+          fontFamily={slideFont}
+          onFontChange={setSlideFont}
         />
       )}
 

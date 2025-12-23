@@ -42,6 +42,8 @@ interface MarkdownEditorProps {
   onColorChange: (color: string) => void
   onTextColorChange: (color: string) => void
   onClose: () => void
+  fontFamily: 'libre' | 'eb'
+  onFontChange: (font: 'libre' | 'eb') => void
 }
 
 export default function MarkdownEditor({
@@ -53,12 +55,15 @@ export default function MarkdownEditor({
   onColorChange,
   onTextColorChange,
   onClose,
+  fontFamily,
+  onFontChange,
 }: MarkdownEditorProps) {
   const [content, setContent] = useState(markdown)
   const [color, setColor] = useState(highlightColor)
   const [txtColor, setTxtColor] = useState(textColor)
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showTextColorPicker, setShowTextColorPicker] = useState(false)
+  const [showFontPicker, setShowFontPicker] = useState(false)
   const [hexInput, setHexInput] = useState(highlightColor)
   const [textHexInput, setTextHexInput] = useState(textColor)
   const [visibleSlide, setVisibleSlide] = useState(currentSlideIndex + 1)
@@ -320,6 +325,47 @@ export default function MarkdownEditor({
           </p>
 
           <div className="flex items-center gap-3">
+            {/* Font selector (dropdown) */}
+            <div className="relative">
+              <button
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
+                onClick={() => {
+                  setShowFontPicker(!showFontPicker)
+                  setShowTextColorPicker(false)
+                  setShowColorPicker(false)
+                }}
+                title="Choose slide font"
+              >
+                <span>Font</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {showFontPicker && (
+                <div className="absolute right-0 top-full mt-2 bg-card border border-border rounded-lg shadow-xl z-10 w-48">
+                  <button
+                    className={`w-full text-left px-3 py-2 hover:bg-muted ${fontFamily === 'eb' ? 'font-semibold' : ''}`}
+                    style={{ fontFamily: 'var(--font-eb-garamond)', fontSize: '15px' }}
+                    onClick={() => {
+                      onFontChange('eb')
+                      setShowFontPicker(false)
+                    }}
+                  >
+                    EB Garamond
+                  </button>
+                  <button
+                    className={`w-full text-left px-3 py-2 hover:bg-muted ${fontFamily === 'libre' ? 'font-semibold' : ''}`}
+                    style={{ fontFamily: 'var(--font-libre-baskerville)', fontSize: '15px' }}
+                    onClick={() => {
+                      onFontChange('libre')
+                      setShowFontPicker(false)
+                    }}
+                  >
+                    Libre Baskerville
+                  </button>
+                </div>
+              )}
+            </div>
             {/* Text color picker */}
             <div className="relative">
               <button

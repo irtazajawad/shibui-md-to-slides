@@ -573,7 +573,7 @@ export default function Slide({ slide, isHeadingSlide, highlightColor, textColor
       <div className="h-full flex flex-col justify-center items-center text-center space-y-8 py-12" style={{ color: textColor }}>
         <h1 className="presentation-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">{parseInlineMarkdown(slide.title, highlightColor)}</h1>
         {subtitle && (
-          <h2 className="presentation-serif text-xl md:text-2xl lg:text-3xl opacity-70 max-w-4xl leading-relaxed">
+          <h2 className="presentation-serif text-xl md:text-2xl lg:text-3xl font-normal opacity-70 max-w-4xl leading-relaxed">
             {parseInlineMarkdown(subtitle, highlightColor)}
           </h2>
         )}

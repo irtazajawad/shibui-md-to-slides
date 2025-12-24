@@ -237,9 +237,9 @@ export default function MarkdownEditor({
     setVisibleSlide(slideCount)
   }
 
-  // Strip # if user pastes/types it, and validate
+  // Strip # if user pastes/types it, remove whitespace and invalid characters, and validate
   const sanitizeHexInput = (value: string) => {
-    return value.replace(/^#/, "").toUpperCase()
+    return value.trim().replace(/^#/, "").replace(/[^A-Fa-f0-9]/g, "").toUpperCase()
   }
 
   const handleHexSubmit = () => {
@@ -247,6 +247,7 @@ export default function MarkdownEditor({
     const hexRegex = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
     const sanitized = sanitizeHexInput(hexInput)
     if (hexRegex.test(sanitized)) {
+      setHexInput(sanitized)
       handleColorChange(`#${sanitized}`)
     }
   }
@@ -256,6 +257,7 @@ export default function MarkdownEditor({
     const hexRegex = /^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
     const sanitized = sanitizeHexInput(textHexInput)
     if (hexRegex.test(sanitized)) {
+      setTextHexInput(sanitized)
       handleTextColorChange(`#${sanitized}`)
     }
   }
@@ -372,6 +374,7 @@ export default function MarkdownEditor({
                 onClick={() => {
                   setShowTextColorPicker(!showTextColorPicker)
                   setShowColorPicker(false)
+                  setShowFontPicker(false)
                 }}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
               >
@@ -409,7 +412,6 @@ export default function MarkdownEditor({
                             onChange={(e) => setTextHexInput(sanitizeHexInput(e.target.value))}
                             onKeyDown={(e) => e.key === "Enter" && handleTextHexSubmit()}
                             placeholder="1A1A1A"
-                            maxLength={6}
                             className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
                           />
                         </div>
@@ -424,7 +426,7 @@ export default function MarkdownEditor({
 
                     {/* Preview */}
                     <div className="p-3 rounded border border-border bg-background">
-                      <p className="text-sm font-serif font-medium" style={{ color: txtColor }}>Text color preview</p>
+                      <p className="text-sm font-medium" style={{ color: txtColor, fontFamily: fontFamily === 'eb' ? 'var(--font-eb-garamond)' : 'var(--font-libre-baskerville)' }}>Text color preview</p>
                     </div>
 
                     {/* Reset to default */}
@@ -445,6 +447,7 @@ export default function MarkdownEditor({
                 onClick={() => {
                   setShowColorPicker(!showColorPicker)
                   setShowTextColorPicker(false)
+                  setShowFontPicker(false)
                 }}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-muted transition-colors"
               >
@@ -482,7 +485,6 @@ export default function MarkdownEditor({
                             onChange={(e) => setHexInput(sanitizeHexInput(e.target.value))}
                             onKeyDown={(e) => e.key === "Enter" && handleHexSubmit()}
                             placeholder="000000"
-                            maxLength={6}
                             className="w-20 px-2 py-1.5 text-sm bg-background text-foreground focus:outline-none"
                           />
                         </div>
@@ -497,7 +499,7 @@ export default function MarkdownEditor({
 
                     {/* Preview */}
                     <div className="p-3 rounded border border-border bg-background">
-                      <p className="text-sm font-serif font-medium">
+                      <p className="text-sm font-medium" style={{ fontFamily: fontFamily === 'eb' ? 'var(--font-eb-garamond)' : 'var(--font-libre-baskerville)' }}>
                         Normal text with <strong style={{ color: color }}>highlighted text</strong> example.
                       </p>
                     </div>

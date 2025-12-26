@@ -143,6 +143,11 @@
     letter-spacing: 0.01em !important;
   }
 
+  /* Improve line height for Libre Baskerville headings to prevent overlap */
+  .presentation-font-libre h2 {
+    line-height: 1.3 !important;
+  }
+
   .presentation-font-eb,
   .presentation-font-eb *:not(code):not(pre):not(pre *):not(.katex):not(.katex *) {
     font-family: var(--font-eb-garamond), serif !important;

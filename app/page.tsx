@@ -128,6 +128,27 @@ export default function Home() {
     return () => document.removeEventListener("fullscreenchange", handleFullscreenChange)
   }, [])
 
+  // Keyboard controls for zoom with up/down arrow keys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't interfere when editor is open or in input fields
+      if (editorOpen || (e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'TEXTAREA') {
+        return
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setZoomLevel((z) => Math.min(150, z + 10))
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setZoomLevel((z) => Math.max(50, z - 10))
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [editorOpen])
+
   // Close download menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

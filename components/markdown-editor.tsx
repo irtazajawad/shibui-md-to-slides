@@ -42,8 +42,8 @@ interface MarkdownEditorProps {
   onColorChange: (color: string) => void
   onTextColorChange: (color: string) => void
   onClose: () => void
-  fontFamily: 'libre' | 'eb'
-  onFontChange: (font: 'libre' | 'eb') => void
+  fontFamily: 'libre' | 'eb' | 'ibm'
+  onFontChange: (font: 'libre' | 'eb' | 'ibm') => void
 }
 
 export default function MarkdownEditor({
@@ -365,6 +365,16 @@ export default function MarkdownEditor({
                   >
                     Libre Baskerville
                   </button>
+                  <button
+                    className={`w-full text-left px-3 py-2 hover:bg-muted ${fontFamily === 'ibm' ? 'font-semibold' : ''}`}
+                    style={{ fontFamily: 'var(--font-ibm-plex-mono)', fontSize: '15px' }}
+                    onClick={() => {
+                      onFontChange('ibm')
+                      setShowFontPicker(false)
+                    }}
+                  >
+                    IBM Plex Mono
+                  </button>
                 </div>
               )}
             </div>
@@ -426,7 +436,7 @@ export default function MarkdownEditor({
 
                     {/* Preview */}
                     <div className="p-3 rounded border border-border bg-background">
-                      <p className="text-sm font-medium" style={{ color: txtColor, fontFamily: fontFamily === 'eb' ? 'var(--font-eb-garamond)' : 'var(--font-libre-baskerville)' }}>Text color preview</p>
+                      <p className="text-sm font-medium" style={{ color: txtColor, fontFamily: fontFamily === 'eb' ? 'var(--font-eb-garamond)' : fontFamily === 'ibm' ? 'var(--font-ibm-plex-mono)' : 'var(--font-libre-baskerville)' }}>Text color preview</p>
                     </div>
 
                     {/* Reset to default */}
@@ -499,7 +509,7 @@ export default function MarkdownEditor({
 
                     {/* Preview */}
                     <div className="p-3 rounded border border-border bg-background">
-                      <p className="text-sm font-medium" style={{ fontFamily: fontFamily === 'eb' ? 'var(--font-eb-garamond)' : 'var(--font-libre-baskerville)' }}>
+                      <p className="text-sm font-medium" style={{ fontFamily: fontFamily === 'eb' ? 'var(--font-eb-garamond)' : fontFamily === 'ibm' ? 'var(--font-ibm-plex-mono)' : 'var(--font-libre-baskerville)' }}>
                         Normal text with <strong style={{ color: color }}>highlighted text</strong> example.
                       </p>
                     </div>

@@ -153,10 +153,22 @@
     font-family: var(--font-eb-garamond), serif !important;
   }
 
-  .presentation-serif h1,
-  .presentation-serif h2,
-  .presentation-serif h3 {
+  .presentation-font-ibm,
+  .presentation-font-ibm *:not(code):not(pre):not(pre *):not(.katex):not(.katex *) {
+    font-family: var(--font-ibm-plex-mono), monospace !important;
+  }
+
+  .presentation-serif:not(.presentation-font-ibm) h1,
+  .presentation-serif:not(.presentation-font-ibm) h2,
+  .presentation-serif:not(.presentation-font-ibm) h3 {
     @apply font-serif font-bold tracking-tight;
+  }
+
+  .presentation-font-ibm h1,
+  .presentation-font-ibm h2,
+  .presentation-font-ibm h3 {
+    font-family: var(--font-ibm-plex-mono), monospace !important;
+    @apply font-bold tracking-tight;
   }
 }
 

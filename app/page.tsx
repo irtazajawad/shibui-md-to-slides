@@ -111,7 +111,7 @@ export default function Home() {
   const [slides, setSlides] = useState<Slide[]>([])
   const [highlightColor, setHighlightColor] = useState("#000000")
   const [textColor, setTextColor] = useState("#1a1a1a")
-  const [slideFont, setSlideFont] = useState<'libre' | 'eb'>("eb")
+  const [slideFont, setSlideFont] = useState<'libre' | 'eb' | 'ibm'>("eb")
   const [zoomLevel, setZoomLevel] = useState(100)
   const [hasSavedPresentation, setHasSavedPresentation] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)

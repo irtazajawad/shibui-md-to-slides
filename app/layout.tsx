@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono, Libre_Baskerville, EB_Garamond, Roboto } from "next/font/google"
+import { Geist, Geist_Mono, Libre_Baskerville, EB_Garamond, Roboto, IBM_Plex_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
@@ -10,13 +10,22 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 const _libreBaskerville = Libre_Baskerville({
   subsets: ["latin"],
   weight: ["400", "700"],
+  style: ["normal", "italic"],
   variable: "--font-libre-baskerville",
 })
 // <ADD> Also expose EB Garamond for slide-only font option
 const _ebGaramond = EB_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "700", "800"],
+  style: ["normal"],
   variable: "--font-eb-garamond",
+})
+// <ADD> IBM Plex Mono for monospace slide font option
+const _ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-ibm-plex-mono",
 })
 const _roboto = Roboto({ subsets: ["latin"], weight: ["400", "700"] })
 
@@ -41,7 +50,7 @@ export default function RootLayout({
         />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
       </head>
-      <body className={`${_libreBaskerville.variable} ${_ebGaramond.variable} font-sans antialiased`} suppressHydrationWarning>
+      <body className={`${_libreBaskerville.variable} ${_ebGaramond.variable} ${_ibmPlexMono.variable} font-sans antialiased`} suppressHydrationWarning>
         {children}
         <Analytics />
       </body>

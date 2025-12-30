@@ -11,7 +11,7 @@ interface PresentationSlidesProps {
   highlightColor: string
   textColor: string
   editorOpen?: boolean
-  fontFamily?: 'libre' | 'eb'
+  fontFamily?: 'libre' | 'eb' | 'ibm'
 }
 
 export default function PresentationSlides({
@@ -40,7 +40,7 @@ export default function PresentationSlides({
   // Safety check for empty slides
   const currentSlide = slides[currentIndex] || { title: "", content: "", isHeadingSlide: false }
 
-  const fontClass = fontFamily === 'eb' ? 'presentation-font-eb' : 'presentation-font-libre'
+  const fontClass = fontFamily === 'eb' ? 'presentation-font-eb' : fontFamily === 'ibm' ? 'presentation-font-ibm' : 'presentation-font-libre'
 
   return (
     <div className={`h-full w-full flex items-center justify-center p-4 md:p-8 lg:p-12 slide-capture-area presentation-serif ${fontClass}`}>

@@ -548,6 +548,7 @@ export default function MarkdownEditor({
             onKeyDown={handleKeyDown}
             onScroll={handleScroll}
             className="w-full h-full resize-none bg-background border border-border rounded-lg p-4 font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 leading-relaxed"
+            style={{ fontVariantLigatures: 'none', fontFeatureSettings: '"liga" 0, "clig" 0' }}
             placeholder="Enter your markdown presentation here..."
             spellCheck={false}
           />

@@ -488,7 +488,7 @@ function parseInlineMarkdown(text: string, highlightColor: string): React.ReactN
           className="underline hover:opacity-80 transition-opacity"
           style={{ color: highlightColor }}
         >
-          {linkMatch[1]}
+          {parseInlineMarkdown(linkMatch[1], highlightColor)}
         </a>,
       )
       remaining = remaining.slice(linkMatch[0].length)
